@@ -11,12 +11,16 @@
 #include <linux/of.h>
 #include <linux/of_platform.h>
 #include <linux/regmap.h>
+#include <linux/slab.h>
 #include <linux/spi/spi.h>
 #include <uapi/linux/usb/charger.h>
 
 enum sprd_pmic_type {
 	PMIC_TYPE_SC2730 = 1,
 	PMIC_TYPE_SC2731,
+	PMIC_TYPE_UMP9620,
+	PMIC_TYPE_UMP9621,
+	PMIC_TYPE_UMP9622,
 };
 
 #define SPRD_PMIC_INT_MASK_STATUS	0x0
@@ -29,6 +33,11 @@ enum sprd_pmic_type {
 #define SPRD_SC2731_IRQ_BASE		0x140
 #define SPRD_SC2731_IRQ_NUMS		16
 #define SPRD_SC2731_CHG_DET		0xedc
+#define SPRD_UMP9620_IRQ_BASE		0x80
+#define SPRD_UMP9620_IRQ_NUMS		11
+/* the UMP9621 and UMP9622 answer at these offsets of the ADI address space */
+#define SPRD_UMP9621_SLAVE_ID		0x8000
+#define SPRD_UMP9622_SLAVE_ID		0xc000
 
 /* PMIC charger detection definition */
 #define SPRD_PMIC_CHG_DET_DELAY_US	200000
@@ -53,6 +62,7 @@ struct sprd_pmic_data {
 	u32 irq_base;
 	u32 num_irqs;
 	u32 charger_det;
+	u32 slave_id;
 };
 
 static const struct mfd_cell sc2730_devices[] = {
@@ -93,6 +103,24 @@ static const struct sprd_pmic_data sc2731_data = {
 	.irq_base = SPRD_SC2731_IRQ_BASE,
 	.num_irqs = SPRD_SC2731_IRQ_NUMS,
 	.charger_det = SPRD_SC2731_CHG_DET,
+};
+
+/*
+ * The UMS9620/UMS9621 PMICs: the UMP9620 is the main one, with the interrupt
+ * controller (its charger type comes from a BC1.2 block of its own); the
+ * UMP9621 and UMP9622 have neither and sit at their slave offsets.
+ */
+static const struct sprd_pmic_data ump9620_data = {
+	.irq_base = SPRD_UMP9620_IRQ_BASE,
+	.num_irqs = SPRD_UMP9620_IRQ_NUMS,
+};
+
+static const struct sprd_pmic_data ump9621_data = {
+	.slave_id = SPRD_UMP9621_SLAVE_ID,
+};
+
+static const struct sprd_pmic_data ump9622_data = {
+	.slave_id = SPRD_UMP9622_SLAVE_ID,
 };
 
 enum usb_charger_type sprd_pmic_detect_charger_type(struct device *dev)
@@ -136,8 +164,22 @@ static int sprd_pmic_spi_write(void *context, const void *data, size_t count)
 {
 	struct device *dev = context;
 	struct spi_device *spi = to_spi_device(dev);
+	const struct sprd_pmic *ddata = spi_get_drvdata(spi);
+	u32 *buf;
+	int ret;
 
-	return spi_write(spi, data, count);
+	if (!ddata->pdata->slave_id)
+		return spi_write(spi, data, count);
+
+	/* the register address leads the buffer: move it to the slave */
+	buf = kmemdup(data, count, GFP_KERNEL);
+	if (!buf)
+		return -ENOMEM;
+	buf[0] += ddata->pdata->slave_id;
+	ret = spi_write(spi, buf, count);
+	kfree(buf);
+
+	return ret;
 }
 
 static int sprd_pmic_spi_read(void *context,
@@ -155,6 +197,7 @@ static int sprd_pmic_spi_read(void *context,
 
 	/* Copy address to read from into first element of SPI buffer. */
 	memcpy(rx_buf, reg, sizeof(u32));
+	rx_buf[0] += ((const struct sprd_pmic *)spi_get_drvdata(spi))->pdata->slave_id;
 	ret = spi_read(spi, rx_buf, 1);
 	if (ret < 0)
 		return ret;
@@ -198,6 +241,21 @@ static int sprd_pmic_probe(struct spi_device *spi)
 		cells = sc2731_devices;
 		num_cells = ARRAY_SIZE(sc2731_devices);
 		break;
+	case PMIC_TYPE_UMP9620:
+		pdata = &ump9620_data;
+		cells = NULL;
+		num_cells = 0;
+		break;
+	case PMIC_TYPE_UMP9621:
+		pdata = &ump9621_data;
+		cells = NULL;
+		num_cells = 0;
+		break;
+	case PMIC_TYPE_UMP9622:
+		pdata = &ump9622_data;
+		cells = NULL;
+		num_cells = 0;
+		break;
 	default:
 		dev_err(&spi->dev, "Invalid device ID\n");
 		return -EINVAL;
@@ -219,6 +277,9 @@ static int sprd_pmic_probe(struct spi_device *spi)
 	ddata->dev = &spi->dev;
 	ddata->irq = spi->irq;
 	ddata->pdata = pdata;
+
+	if (!pdata->num_irqs)
+		goto populate;
 
 	ddata->irq_chip.name = dev_name(&spi->dev);
 	ddata->irq_chip.status_base =
@@ -246,9 +307,13 @@ static int sprd_pmic_probe(struct spi_device *spi)
 		return ret;
 	}
 
-	ret = devm_mfd_add_devices(&spi->dev, PLATFORM_DEVID_AUTO,
-				   cells, num_cells, NULL, 0,
-				   regmap_irq_get_domain(ddata->irq_data));
+populate:
+	if (cells)
+		ret = devm_mfd_add_devices(&spi->dev, PLATFORM_DEVID_AUTO,
+					   cells, num_cells, NULL, 0,
+					   regmap_irq_get_domain(ddata->irq_data));
+	else
+		ret = devm_of_platform_populate(&spi->dev);
 	if (ret) {
 		dev_err(&spi->dev, "Failed to populate sub-devices %d\n", ret);
 		return ret;
@@ -265,7 +330,7 @@ static int sprd_pmic_suspend(struct device *dev)
 {
 	struct sprd_pmic *ddata = dev_get_drvdata(dev);
 
-	if (device_may_wakeup(dev))
+	if (ddata->irq > 0 && device_may_wakeup(dev))
 		enable_irq_wake(ddata->irq);
 
 	return 0;
@@ -275,7 +340,7 @@ static int sprd_pmic_resume(struct device *dev)
 {
 	struct sprd_pmic *ddata = dev_get_drvdata(dev);
 
-	if (device_may_wakeup(dev))
+	if (ddata->irq > 0 && device_may_wakeup(dev))
 		disable_irq_wake(ddata->irq);
 
 	return 0;
@@ -287,6 +352,9 @@ static DEFINE_SIMPLE_DEV_PM_OPS(sprd_pmic_pm_ops,
 static const struct of_device_id sprd_pmic_match[] = {
 	{ .compatible = "sprd,sc2730", .data = (void *)PMIC_TYPE_SC2730 },
 	{ .compatible = "sprd,sc2731", .data = (void *)PMIC_TYPE_SC2731 },
+	{ .compatible = "sprd,ump9620", .data = (void *)PMIC_TYPE_UMP9620 },
+	{ .compatible = "sprd,ump9621", .data = (void *)PMIC_TYPE_UMP9621 },
+	{ .compatible = "sprd,ump9622", .data = (void *)PMIC_TYPE_UMP9622 },
 	{},
 };
 MODULE_DEVICE_TABLE(of, sprd_pmic_match);
@@ -294,6 +362,9 @@ MODULE_DEVICE_TABLE(of, sprd_pmic_match);
 static const struct spi_device_id sprd_pmic_spi_ids[] = {
 	{ .name = "sc2730", .driver_data = PMIC_TYPE_SC2730 },
 	{ .name = "sc2731", .driver_data = PMIC_TYPE_SC2731 },
+	{ .name = "ump9620", .driver_data = PMIC_TYPE_UMP9620 },
+	{ .name = "ump9621", .driver_data = PMIC_TYPE_UMP9621 },
+	{ .name = "ump9622", .driver_data = PMIC_TYPE_UMP9622 },
 	{},
 };
 MODULE_DEVICE_TABLE(spi, sprd_pmic_spi_ids);
