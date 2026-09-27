@@ -532,7 +532,7 @@ int panfrost_gpu_init(struct panfrost_device *pfdev)
 
 	dma_set_max_seg_size(pfdev->base.dev, UINT_MAX);
 
-	pfdev->gpu_irq = platform_get_irq_byname(to_platform_device(pfdev->base.dev), "gpu");
+	pfdev->gpu_irq = panfrost_irq_get(pfdev, "gpu");
 	if (pfdev->gpu_irq < 0)
 		return pfdev->gpu_irq;
 
