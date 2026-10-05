@@ -27,7 +27,9 @@
  * The other card's rings count as well.  The CP runs one AT interpreter per
  * SIM card on the same sbuf: rings 0-2 for the first card (URCs on 0), 3-5
  * for the second (URCs on 3), as the vendor RIL opens them.  Whichever card
- * the port is on, the other one's URC ring is read and dropped (drain_rings):
+ * the port is on, the other one's URC ring is drained (drain_rings). SMS
+ * storage notifications are retained in sms_events with their source card;
+ * the other URCs are dropped:
  * with the port on the second card, ring 0 filled within a minute and the
  * CP's AT server stopped answering on every ring, without an assert, until a
  * reboot.
@@ -71,13 +73,23 @@
 #include <linux/sipc.h>
 #include <linux/skbuff.h>
 #include <linux/slab.h>
+#include <linux/spinlock.h>
 #include <linux/string.h>
+#include <linux/sysfs.h>
 #include <linux/workqueue.h>
 #include <linux/wwan.h>
 
 #define SIPC_WWAN_RX_CHUNK	2048
 #define SIPC_WWAN_URC_LINE	1024
 #define SIPC_WWAN_URC_HELD	32
+#define SIPC_WWAN_SMS_EVENTS	64
+
+struct sipc_wwan_sms_event {
+	u64 sequence;
+	u32 index;
+	u8 card;
+	char memory[8];
+};
 
 static char *node_label = "stty_nr";
 module_param(node_label, charp, 0444);
@@ -125,17 +137,79 @@ struct sipc_wwan {
 	unsigned int urc_len;
 	struct sk_buff_head urc_held;
 	unsigned long drained;
+	spinlock_t sms_lock;
+	u64 sms_sequence;
+	struct sipc_wwan_sms_event sms_events[SIPC_WWAN_SMS_EVENTS];
 };
 
 struct sipc_wwan_drain {
 	struct sipc_wwan *sw;
 	int ring;
+	char line[96];
+	unsigned int length;
+	bool overflow;
 };
 
 static struct sipc_wwan_drain drains[SIPC_WWAN_DRAIN_MAX];
 static int n_drains;
 
 static struct sipc_wwan sipc_wwan;
+
+/* A separate event path preserves the SIM identity without injecting the
+ * secondary SIM's AT responses into ModemManager's primary command stream.
+ * Readers get a bounded snapshot, and poll(POLLPRI) wakes on sysfs_notify().
+ * Entries are never consumed by a reader; sequence gaps trigger a rescan.
+ */
+static ssize_t sms_events_show(struct device *dev,
+			      struct device_attribute *attr, char *buf)
+{
+	struct sipc_wwan *sw = &sipc_wwan;
+	unsigned long flags;
+	u64 first, sequence;
+	ssize_t length = 0;
+
+	spin_lock_irqsave(&sw->sms_lock, flags);
+	first = sw->sms_sequence > SIPC_WWAN_SMS_EVENTS ?
+		sw->sms_sequence - SIPC_WWAN_SMS_EVENTS + 1 : 1;
+	for (sequence = first; sequence <= sw->sms_sequence; sequence++) {
+		struct sipc_wwan_sms_event *event =
+			&sw->sms_events[(sequence - 1) % SIPC_WWAN_SMS_EVENTS];
+
+		length += sysfs_emit_at(buf, length, "%llu %u %s %u\n",
+				       event->sequence, event->card,
+				       event->memory, event->index);
+	}
+	spin_unlock_irqrestore(&sw->sms_lock, flags);
+	return length;
+}
+static DEVICE_ATTR_RO(sms_events);
+
+static void sipc_wwan_sms_line(struct sipc_wwan *sw, int ring,
+			       const char *data, unsigned int length)
+{
+	struct sipc_wwan_sms_event *event;
+	unsigned long flags;
+	char line[96], memory[8];
+	unsigned int index;
+	char *start;
+
+	if ((ring != 0 && ring != 3) || length >= sizeof(line))
+		return;
+	memcpy(line, data, length);
+	line[length] = '\0';
+	start = skip_spaces(line);
+	if (sscanf(start, "+CMTI: \"%7[A-Z]\",%u", memory, &index) != 2)
+		return;
+	spin_lock_irqsave(&sw->sms_lock, flags);
+	sw->sms_sequence++;
+	event = &sw->sms_events[(sw->sms_sequence - 1) % SIPC_WWAN_SMS_EVENTS];
+	event->sequence = sw->sms_sequence;
+	event->card = ring == 3 ? 1 : 0;
+	event->index = index;
+	strscpy(event->memory, memory, sizeof(event->memory));
+	spin_unlock_irqrestore(&sw->sms_lock, flags);
+	sysfs_notify(&sw->pdev->dev.kobj, NULL, "sms_events");
+}
 
 static void sipc_wwan_flush_urcs(struct sipc_wwan *sw)
 {
@@ -187,6 +261,7 @@ static void sipc_wwan_urc_line(struct sipc_wwan *sw)
 {
 	struct sk_buff *skb;
 
+	sipc_wwan_sms_line(sw, urc_ring, sw->urc_line, sw->urc_len);
 	mutex_lock(&sw->rx_lock);
 	skb = sw->open ? alloc_skb(sw->urc_len, GFP_KERNEL) : NULL;
 	if (!sw->open)
@@ -225,14 +300,27 @@ static void sipc_wwan_drain_notify(int event, void *data)
 {
 	struct sipc_wwan_drain *d = data;
 	char buf[256];
-	int n;
+	int n, i;
 
 	if (event != SBUF_NOTIFY_READ)
 		return;
 
 	while ((n = sbuf_read(d->sw->dst, d->sw->channel, d->ring, buf,
-			      sizeof(buf), 0)) > 0)
+			      sizeof(buf), 0)) > 0) {
 		d->sw->drained += n;
+		for (i = 0; i < n; i++) {
+			if (buf[i] == '\n') {
+				if (!d->overflow)
+					sipc_wwan_sms_line(d->sw, d->ring, d->line, d->length);
+				d->length = 0;
+				d->overflow = false;
+			} else if (d->length < sizeof(d->line)) {
+				d->line[d->length++] = buf[i];
+			} else {
+				d->overflow = true;
+			}
+		}
+	}
 }
 
 static int sipc_wwan_start(struct wwan_port *port)
@@ -466,8 +554,12 @@ static int __init sipc_wwan_init(void)
 	sw->channel = channel;
 	mutex_init(&sw->tx_lock);
 	mutex_init(&sw->rx_lock);
+	spin_lock_init(&sw->sms_lock);
 	skb_queue_head_init(&sw->urc_held);
 	INIT_DELAYED_WORK(&sw->watch, sipc_wwan_watch);
+	ret = device_create_file(&sw->pdev->dev, &dev_attr_sms_events);
+	if (ret)
+		goto err;
 	/* drain from now on (registering also drains what is already queued) */
 	ret = sbuf_register_notifier(dst, channel, cmd_ring,
 				     sipc_wwan_cmd_notify, sw);
@@ -490,6 +582,7 @@ static int __init sipc_wwan_init(void)
 		if (urc_ring >= 0)
 			sbuf_unregister_notifier(dst, channel, urc_ring);
 		sbuf_unregister_notifier(dst, channel, cmd_ring);
+		device_remove_file(&sw->pdev->dev, &dev_attr_sms_events);
 		goto err;
 	}
 	pr_info("sipc_wwan: AT channel %s (dst %u, channel %u): ring %d, URCs from ring %d, %d ring(s) drained, card %d\n",
@@ -514,6 +607,7 @@ static void __exit sipc_wwan_exit(void)
 	if (urc_ring >= 0)
 		sbuf_unregister_notifier(sw->dst, sw->channel, urc_ring);
 	sbuf_unregister_notifier(sw->dst, sw->channel, cmd_ring);
+	device_remove_file(&sw->pdev->dev, &dev_attr_sms_events);
 	WRITE_ONCE(sw->stopping, true);
 	cancel_delayed_work_sync(&sw->watch);
 	if (sw->port)
