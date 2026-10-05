@@ -1,0 +1,19 @@
+What:           /sys/bus/platform/devices/*/sms_events
+Date:           October 2026
+Contact:        Enceka <enceka@yeah.net>
+Description:
+                Read-only notification snapshot for SMS storage arrivals on
+                the Unisoc SIPC AT channel. Each line contains:
+
+                <sequence> <SIM index> <memory> <storage index>
+
+                SIM indices are zero-based (0 or 1), independently of the
+                selected data SIM. Sequence numbers start at one when the
+                driver is loaded. The latest 64 notifications are retained;
+                reading does not consume them. poll(POLLPRI) wakes when a new
+                notification is added. Consumers should rescan both cards if
+                the sequence resets or a gap exceeds the retained snapshot.
+
+                This attribute does not contain phone numbers or SMS text.
+                Consumers read the indicated storage through the current AT
+                channel owner, using an explicitly card-addressed command.
