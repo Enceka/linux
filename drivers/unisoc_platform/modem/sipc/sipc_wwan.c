@@ -198,7 +198,10 @@ static void sipc_wwan_sms_line(struct sipc_wwan *sw, int ring,
 	memcpy(line, data, length);
 	line[length] = '\0';
 	start = skip_spaces(line);
-	if (sscanf(start, "+CMTI: \"%7[A-Z]\",%u", memory, &index) != 2)
+	/* Kernel vsscanf scansets list literal characters; unlike libc they
+	 * do not expand A-Z ranges. Both SM and ME must be accepted. */
+	if (sscanf(start, "+CMTI: \"%7[ABCDEFGHIJKLMNOPQRSTUVWXYZ]\",%u",
+		   memory, &index) != 2)
 		return;
 	spin_lock_irqsave(&sw->sms_lock, flags);
 	sw->sms_sequence++;
