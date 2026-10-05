@@ -1,0 +1,18 @@
+What:           /sys/bus/platform/devices/*/call_events
+Date:           October 2026
+Contact:        Enceka <enceka@yeah.net>
+Description:
+                Read-only call-event snapshot from both SIPC URC channels and
+                the command reply channel. Each line contains:
+
+                <sequence> <channel hint> <RING|STATE|END|DIAL>
+
+                The latest 64 events are retained. poll(POLLPRI) wakes on a
+                new event; reading does not consume entries. No caller number
+                or raw payload is exposed. Sequence starts at one per load.
+
+                A channel hint (0 or 1) is not a reliable source SIM: firmware
+                may route either SIM onto one channel. Consumers must query
+                both cards' CLCC through the AT owner, retaining that query's
+                source card on each call. Events only request a refresh; they
+                never start, accept, or end a call.

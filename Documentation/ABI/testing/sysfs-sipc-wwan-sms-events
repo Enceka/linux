@@ -5,10 +5,12 @@ Description:
                 Read-only notification snapshot for SMS storage arrivals on
                 the Unisoc SIPC AT channel. Each line contains:
 
-                <sequence> <SIM index> <memory> <storage index>
+                <sequence> <URC channel hint> <memory> <storage index>
 
-                SIM indices are zero-based (0 or 1), independently of the
-                selected data SIM. Sequence numbers start at one when the
+                Channel hints are zero-based (0 or 1), independently of
+                the selected data SIM. Firmware may direct both SIMs to
+                one URC channel: consumers must resolve SMS origin from
+                card-addressed storage, not this channel hint. Sequence numbers start at one when the
                 driver is loaded. The latest 64 notifications are retained;
                 reading does not consume them. poll(POLLPRI) wakes when a new
                 notification is added. Consumers should rescan both cards if

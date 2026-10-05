@@ -83,6 +83,13 @@
 #define SIPC_WWAN_URC_LINE	1024
 #define SIPC_WWAN_URC_HELD	32
 #define SIPC_WWAN_SMS_EVENTS	64
+#define SIPC_WWAN_CALL_EVENTS	64
+
+struct sipc_wwan_call_event {
+	u64 sequence;
+	u8 channel;
+	u8 type;
+};
 
 struct sipc_wwan_sms_event {
 	u64 sequence;
@@ -140,6 +147,10 @@ struct sipc_wwan {
 	spinlock_t sms_lock;
 	u64 sms_sequence;
 	struct sipc_wwan_sms_event sms_events[SIPC_WWAN_SMS_EVENTS];
+	u64 call_sequence;
+	struct sipc_wwan_call_event call_events[SIPC_WWAN_CALL_EVENTS];
+	char call_line[64];
+	unsigned int call_len;
 };
 
 struct sipc_wwan_drain {
@@ -184,6 +195,63 @@ static ssize_t sms_events_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(sms_events);
 
+/* Retain event kinds only: never expose caller numbers or raw URCs. A
+ * channel is only a hint; userspace resolves both SIMs through addressed CLCC. */
+static const char * const call_types[] = { "RING", "STATE", "END", "DIAL" };
+static ssize_t call_events_show(struct device *dev,
+			       struct device_attribute *attr, char *buf)
+{
+	struct sipc_wwan *sw = &sipc_wwan;
+	unsigned long flags;
+	u64 first, seq;
+	ssize_t len = 0;
+
+	spin_lock_irqsave(&sw->sms_lock, flags);
+	first = sw->call_sequence > SIPC_WWAN_CALL_EVENTS ?
+		sw->call_sequence - SIPC_WWAN_CALL_EVENTS + 1 : 1;
+	for (seq = first; seq <= sw->call_sequence; seq++) {
+		struct sipc_wwan_call_event *e = &sw->call_events[(seq - 1) % SIPC_WWAN_CALL_EVENTS];
+
+		len += sysfs_emit_at(buf, len, "%llu %u %s\n", e->sequence,
+				     e->channel, call_types[e->type]);
+	}
+	spin_unlock_irqrestore(&sw->sms_lock, flags);
+	return len;
+}
+static DEVICE_ATTR_RO(call_events);
+
+static void sipc_wwan_call_line(struct sipc_wwan *sw, int ring,
+			       const char *data, unsigned int length)
+{
+	struct sipc_wwan_call_event *e;
+	unsigned long flags;
+	char prefix[64], *line;
+	int type;
+
+	length = min_t(unsigned int, length, sizeof(prefix) - 1);
+	memcpy(prefix, data, length);
+	prefix[length] = 0;
+	line = skip_spaces(prefix);
+	if (!strncmp(line, "RING", 4) || !strncmp(line, "+CRING:", 7))
+		type = 0;
+	else if (!strncmp(line, "+CLCCS:", 7) || !strncmp(line, "+SPCALLEXTINFO:", 15))
+		type = 1;
+	else if (!strncmp(line, "NO CARRIER", 10))
+		type = 2;
+	else if (!strncmp(line, "+CDU:", 5))
+		type = 3;
+	else
+		return;
+	spin_lock_irqsave(&sw->sms_lock, flags);
+	sw->call_sequence++;
+	e = &sw->call_events[(sw->call_sequence - 1) % SIPC_WWAN_CALL_EVENTS];
+	e->sequence = sw->call_sequence;
+	e->channel = ring == 3 || ring == 4 ? 1 : 0;
+	e->type = type;
+	spin_unlock_irqrestore(&sw->sms_lock, flags);
+	sysfs_notify(&sw->pdev->dev.kobj, NULL, "call_events");
+}
+
 static void sipc_wwan_sms_line(struct sipc_wwan *sw, int ring,
 			       const char *data, unsigned int length)
 {
@@ -226,7 +294,7 @@ static void sipc_wwan_cmd_notify(int event, void *data)
 {
 	struct sipc_wwan *sw = data;
 	struct sk_buff *skb;
-	int n;
+	int n, i;
 
 	if (event == SBUF_NOTIFY_READY) {
 		mod_delayed_work(system_wq, &sw->watch, 0);
@@ -246,6 +314,14 @@ static void sipc_wwan_cmd_notify(int event, void *data)
 			return;
 		}
 		skb_put(skb, n);
+		for (i = 0; i < n; i++) {
+			if (skb->data[i] == '\n') {
+				sipc_wwan_call_line(sw, cmd_ring, sw->call_line, sw->call_len);
+				sw->call_len = 0;
+			} else if (sw->call_len < sizeof(sw->call_line)) {
+				sw->call_line[sw->call_len++] = skb->data[i];
+			}
+		}
 		mutex_lock(&sw->rx_lock);
 		if (sw->open) {
 			sw->cmd_midline = skb->data[n - 1] != '\n';
@@ -265,6 +341,7 @@ static void sipc_wwan_urc_line(struct sipc_wwan *sw)
 	struct sk_buff *skb;
 
 	sipc_wwan_sms_line(sw, urc_ring, sw->urc_line, sw->urc_len);
+	sipc_wwan_call_line(sw, urc_ring, sw->urc_line, sw->urc_len);
 	mutex_lock(&sw->rx_lock);
 	skb = sw->open ? alloc_skb(sw->urc_len, GFP_KERNEL) : NULL;
 	if (!sw->open)
@@ -313,6 +390,7 @@ static void sipc_wwan_drain_notify(int event, void *data)
 		d->sw->drained += n;
 		for (i = 0; i < n; i++) {
 			if (buf[i] == '\n') {
+				sipc_wwan_call_line(d->sw, d->ring, d->line, d->length);
 				if (!d->overflow)
 					sipc_wwan_sms_line(d->sw, d->ring, d->line, d->length);
 				d->length = 0;
@@ -563,6 +641,11 @@ static int __init sipc_wwan_init(void)
 	ret = device_create_file(&sw->pdev->dev, &dev_attr_sms_events);
 	if (ret)
 		goto err;
+	ret = device_create_file(&sw->pdev->dev, &dev_attr_call_events);
+	if (ret) {
+		device_remove_file(&sw->pdev->dev, &dev_attr_sms_events);
+		goto err;
+	}
 	/* drain from now on (registering also drains what is already queued) */
 	ret = sbuf_register_notifier(dst, channel, cmd_ring,
 				     sipc_wwan_cmd_notify, sw);
@@ -586,6 +669,7 @@ static int __init sipc_wwan_init(void)
 			sbuf_unregister_notifier(dst, channel, urc_ring);
 		sbuf_unregister_notifier(dst, channel, cmd_ring);
 		device_remove_file(&sw->pdev->dev, &dev_attr_sms_events);
+		device_remove_file(&sw->pdev->dev, &dev_attr_call_events);
 		goto err;
 	}
 	pr_info("sipc_wwan: AT channel %s (dst %u, channel %u): ring %d, URCs from ring %d, %d ring(s) drained, card %d\n",
@@ -611,6 +695,7 @@ static void __exit sipc_wwan_exit(void)
 		sbuf_unregister_notifier(sw->dst, sw->channel, urc_ring);
 	sbuf_unregister_notifier(sw->dst, sw->channel, cmd_ring);
 	device_remove_file(&sw->pdev->dev, &dev_attr_sms_events);
+	device_remove_file(&sw->pdev->dev, &dev_attr_call_events);
 	WRITE_ONCE(sw->stopping, true);
 	cancel_delayed_work_sync(&sw->watch);
 	if (sw->port)
