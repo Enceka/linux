@@ -13,6 +13,7 @@
 
 #ifndef _SIPA_DELE_PRIV_H_
 #define _SIPA_DELE_PRIV_H_
+#include <linux/mutex.h>
 #include <linux/sipc.h>
 #include <linux/sipa.h>
 
@@ -75,6 +76,7 @@ struct sipa_delegator {
 	atomic_t requesting_cons;
 	bool pd_eb_flag;
 	bool pd_get_flag;
+	struct mutex power_lock;
 	spinlock_t lock;
 	struct task_struct *thread;
 	struct work_struct notify_work;

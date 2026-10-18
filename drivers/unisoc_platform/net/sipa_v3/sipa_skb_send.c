@@ -112,7 +112,6 @@ EXPORT_SYMBOL(sipa_find_sent_skb);
 
 static bool sipa_do_free_skb(struct sipa_node_desc_tag *node)
 {
-	int retry_cnt = 10;
 	unsigned long flags;
 	struct sipa_skb_dma_addr_pair *iter, *_iter;
 	struct sipa_plat_drv_cfg *ipa = sipa_get_ctrl_pointer();
@@ -120,7 +119,6 @@ static bool sipa_do_free_skb(struct sipa_node_desc_tag *node)
 
 	spin_lock_irqsave(&sender->send_lock, flags);
 
-check_again:
 	list_for_each_entry_safe(iter, _iter,
 				 &sender->sending_list, list) {
 		if (iter->dma_addr == node->address) {
@@ -142,9 +140,6 @@ check_again:
 		}
 	}
 
-	if (retry_cnt-- != 0)
-		goto check_again;
-
 	spin_unlock_irqrestore(&sender->send_lock, flags);
 
 	return false;
@@ -165,7 +160,7 @@ static void sipa_free_sent_items(void)
 	sipa_hal_cmn_fifo_get_filled_depth(sender->dev,
 					   sender->ep->send_fifo.idx,
 					   NULL, &num);
-	if (!num || list_empty(&sender->sending_list))
+	if (!num)
 		return;
 
 	sipa_hal_sync_node_from_tx_fifo(sender->dev,
@@ -175,24 +170,25 @@ static void sipa_free_sent_items(void)
 		node = sipa_hal_get_tx_node_rptr(sender->dev,
 						 sender->ep->send_fifo.idx, i);
 		if (!node) {
-			dev_err(sender->dev, "sender node is null\n");
-			return;
+			dev_err_ratelimited(sender->dev, "sender node is null\n");
+			break;
 		}
 
+		/* An errored completion still owns a buffer that must be reclaimed. */
 		ret = sipa_do_free_skb(node);
 		if (ret)
 			success_cnt++;
 		else
-			break;
+			dev_warn_ratelimited(sender->dev, "unmatched TX completion at %u\n", i);
 	}
 
 	if (success_cnt != num)
-		dev_err(sender->dev,
+		dev_err_ratelimited(sender->dev,
 			"skb can not free, recv num = %d release num = %d\n",
 			num, success_cnt);
 
 	sipa_hal_add_tx_fifo_rptr(sender->dev,
-				  sender->ep->send_fifo.idx, num);
+				  sender->ep->send_fifo.idx, i);
 	atomic_add(success_cnt, &sender->left_cnt);
 	if (sender->free_notify_net &&
 	    atomic_read(&sender->left_cnt) >
