@@ -107,6 +107,9 @@ struct sdhci_sprd_host {
 	struct register_hotplug reg_debounce_cn;
 	struct register_hotplug reg_rmldo_en;
 	bool fast_hotplug;
+	bool sd_power_valid;
+	unsigned char sd_power_mode;
+	unsigned short sd_power_vdd;
 	bool cd_active_high;
 };
 
@@ -549,32 +552,50 @@ static void sdhci_sprd_fast_hotplug_enable(struct sdhci_sprd_host *sprd_host)
 }
 
 static void sdhci_sprd_set_power(struct sdhci_host *host, unsigned char mode,
-				 unsigned short vdd)
+                                 unsigned short vdd)
 {
 	struct sdhci_sprd_host *sprd_host = TO_SPRD_HOST(host);
 	struct mmc_host *mmc = host->mmc;
 	bool card_present = mmc_gpio_get_cd(mmc) > 0;
+	int ret = 0;
+
+	/* Factory SD power transitions: do not reprogram RMLDO on each set_ios.
+	 * Clock/timing/bus-width changes are not slot power transitions. */
+	if (sprd_host->fast_hotplug && sprd_host->sd_power_valid &&
+	    sprd_host->sd_power_mode == mode && sprd_host->sd_power_vdd == vdd)
+		return;
 
 	switch (mode) {
 	case MMC_POWER_OFF:
 		if (sprd_host->fast_hotplug && card_present)
 			sdhci_sprd_fast_hotplug_disable(sprd_host);
-
-		mmc_regulator_set_ocr(host->mmc, mmc->supply.vmmc, 0);
-
+		ret = mmc_regulator_set_ocr(mmc, mmc->supply.vmmc, 0);
 		mmc_regulator_disable_vqmmc(mmc);
 		break;
 	case MMC_POWER_ON:
-		mmc_regulator_enable_vqmmc(mmc);
-		if (sprd_host->fast_hotplug && card_present)
+		ret = mmc_regulator_enable_vqmmc(mmc);
+		if (!ret && sprd_host->fast_hotplug && card_present)
 			sdhci_sprd_fast_hotplug_enable(sprd_host);
 		break;
 	case MMC_POWER_UP:
-		mmc_regulator_set_ocr(host->mmc, mmc->supply.vmmc, vdd);
-		if (sprd_host->fast_hotplug && card_present)
+		ret = mmc_regulator_set_ocr(mmc, mmc->supply.vmmc, vdd);
+		if (!ret && sprd_host->fast_hotplug) {
+			/* The factory enables VQMMC after VMMC has settled. */
+			usleep_range(200, 250);
+			ret = mmc_regulator_enable_vqmmc(mmc);
+		}
+		if (!ret && sprd_host->fast_hotplug && card_present)
 			sdhci_sprd_fast_hotplug_enable(sprd_host);
 		break;
 	}
+	if (ret) {
+		sprd_host->sd_power_valid = false;
+		dev_err(mmc_dev(mmc), "slot power transition %u failed: %d\n", mode, ret);
+		return;
+	}
+	sprd_host->sd_power_mode = mode;
+	sprd_host->sd_power_vdd = vdd;
+	sprd_host->sd_power_valid = true;
 }
 
 static const struct sdhci_ops sdhci_sprd_ops = {
@@ -641,6 +662,20 @@ static int sdhci_sprd_voltage_switch(struct mmc_host *mmc, struct mmc_ios *ios)
 			pr_err("%s: Switching signalling voltage failed\n",
 			       mmc_hostname(mmc));
 			return ret;
+		}
+	}
+
+	/* Do not acknowledge a removable-slot voltage switch without hardware readback.
+	 * Keep fixed-I/O eMMC and SDIO boards on their existing path. */
+	if (sprd_host->fast_hotplug && ios->signal_voltage == MMC_SIGNAL_VOLTAGE_180) {
+		if (IS_ERR(mmc->supply.vqmmc))
+			return -EOPNOTSUPP;
+		ret = regulator_get_voltage(mmc->supply.vqmmc);
+		if (ret < 0)
+			return ret;
+		if (ret < 1700000 || ret > 1950000) {
+			dev_err(mmc_dev(mmc), "SD 1.8V switch read back %duV\n", ret);
+			return -EIO;
 		}
 	}
 
