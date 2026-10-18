@@ -943,6 +943,8 @@ static const struct panfrost_compatible sprd_mali_data = {
 	.num_supplies = 0,
 	.num_pm_domains = 0,
 	.no_devfreq = true,
+	/* AON GPU_EB: gated across system sleep along with PD_GPU */
+	.pm_features = BIT(GPU_PM_CLK_DIS),
 };
 
 static const struct of_device_id dt_match[] = {

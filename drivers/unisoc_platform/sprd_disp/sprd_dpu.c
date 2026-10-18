@@ -478,9 +478,15 @@ void sprd_dpu_stop(struct sprd_dpu *dpu)
 {
 	struct dpu_context *ctx = &dpu->ctx;
 
+	/*
+	 * dpu_r6p1 (qogirn6lite) sets wb_configed in its init, but wb_work is only
+	 * initialised by dpu_write_back_config(), which may never have run: a
+	 * cancel_work_sync() on it warned at every system suspend.
+	 */
 	if (ctx->wb_configed) {
 		ctx->need_wb_work = false;
-		cancel_work_sync(&ctx->wb_work);
+		if (ctx->wb_work.func)
+			cancel_work_sync(&ctx->wb_work);
 	}
 
 	down(&ctx->lock);

@@ -558,12 +558,18 @@ static int panfrost_device_resume(struct device *dev)
 		}
 	}
 
-	ret = pm_runtime_force_resume(dev);
+	ret = panfrost_sprd_resume(pfdev);
 	if (ret)
 		goto err_resume;
 
+	ret = pm_runtime_force_resume(dev);
+	if (ret)
+		goto err_sprd;
+
 	return 0;
 
+err_sprd:
+	panfrost_sprd_suspend(pfdev);
 err_resume:
 	if (pfdev->comp->pm_features & BIT(GPU_PM_CLK_DIS) && pfdev->bus_clock)
 		clk_disable(pfdev->bus_clock);
@@ -584,6 +590,8 @@ static int panfrost_device_suspend(struct device *dev)
 	ret = pm_runtime_force_suspend(dev);
 	if (ret)
 		return ret;
+
+	panfrost_sprd_suspend(pfdev);
 
 	if (pfdev->comp->pm_features & BIT(GPU_PM_CLK_DIS)) {
 		if (pfdev->bus_clock)

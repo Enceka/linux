@@ -196,6 +196,70 @@ static void sprd_gpu_power_off(struct panfrost_sprd *sprd)
 			   sprd->gpll_frc_on.mask, ~sprd->gpll_frc_on.mask);
 }
 
+/*
+ * Power the GPU up and give it a clock: everything kbase's mali_power_on()
+ * and mali_clock_on() do, minus its DVFS governor.
+ */
+static void sprd_gpu_stop(struct panfrost_sprd *sprd);
+
+static int sprd_gpu_start(struct panfrost_device *pfdev,
+			  struct panfrost_sprd *sprd)
+{
+	int ret;
+
+	/*
+	 * The GPU soft reset is the one panfrost_reset_init() already owns, so
+	 * it is toggled through pfdev->rstc rather than claimed a second time.
+	 */
+	sprd_gpu_power_on(sprd, pfdev->rstc);
+
+	/* Core clock gate inside the GPU APB block */
+	ret = regmap_update_bits(sprd->clk_core_gpu_eb.map,
+			   sprd->clk_core_gpu_eb.reg,
+			   sprd->clk_core_gpu_eb.mask,
+			   sprd->clk_core_gpu_eb.mask);
+	if (ret)
+		goto err_power;
+	udelay(400);
+
+	ret = sprd_gpu_top_state_wait(sprd);
+	if (ret) {
+		dev_err(pfdev->dev, "GPU did not report itself powered up (%d)\n",
+			ret);
+		goto err_power;
+	}
+
+	ret = regmap_update_bits(sprd->gpu_dvfs_apb,
+			   SPRD_DVFS_APB_FREQ_UPD_CFG0,
+			   SPRD_DVFS_APB_FREQ_UPD_MASK, 1);
+	if (ret)
+		goto err_power;
+	ret = regmap_update_bits(sprd->gpu_dvfs_apb,
+			   SPRD_DVFS_APB_DVFS_INDEX_CFG,
+			   SPRD_DVFS_APB_DVFS_INDEX_MASK,
+			   SPRD_DVFS_INDEX_DEFAULT);
+
+	if (ret)
+		goto err_power;
+	return 0;
+
+err_power:
+	sprd_gpu_stop(sprd);
+	return ret;
+}
+
+/* kbase's mali_clock_off() and mali_power_off(), in that order */
+static void sprd_gpu_stop(struct panfrost_sprd *sprd)
+{
+	regmap_update_bits(sprd->clk_core_gpu_eb.map,
+			   sprd->clk_core_gpu_eb.reg,
+			   sprd->clk_core_gpu_eb.mask,
+			   ~sprd->clk_core_gpu_eb.mask);
+	udelay(200);
+
+	sprd_gpu_power_off(sprd);
+}
+
 int panfrost_sprd_init(struct panfrost_device *pfdev)
 {
 	struct device *dev = pfdev->dev;
@@ -259,32 +323,9 @@ int panfrost_sprd_init(struct panfrost_device *pfdev)
 			   sprd->gpu_sw_dvfs_ctrl.mask,
 			   ~sprd->gpu_sw_dvfs_ctrl.mask);
 
-	/*
-	 * The GPU soft reset is the one panfrost_reset_init() already owns, so
-	 * it is toggled through pfdev->rstc rather than claimed a second time.
-	 */
-	sprd_gpu_power_on(sprd, pfdev->rstc);
-
-	/* Core clock gate inside the GPU APB block */
-	regmap_update_bits(sprd->clk_core_gpu_eb.map,
-			   sprd->clk_core_gpu_eb.reg,
-			   sprd->clk_core_gpu_eb.mask,
-			   sprd->clk_core_gpu_eb.mask);
-	udelay(400);
-
-	ret = sprd_gpu_top_state_wait(sprd);
-	if (ret) {
-		dev_err(dev, "GPU did not report itself powered up (%d)\n", ret);
+	ret = sprd_gpu_start(pfdev, sprd);
+	if (ret)
 		return ret;
-	}
-
-	regmap_update_bits(sprd->gpu_dvfs_apb,
-			   SPRD_DVFS_APB_FREQ_UPD_CFG0,
-			   SPRD_DVFS_APB_FREQ_UPD_MASK, 1);
-	regmap_update_bits(sprd->gpu_dvfs_apb,
-			   SPRD_DVFS_APB_DVFS_INDEX_CFG,
-			   SPRD_DVFS_APB_DVFS_INDEX_MASK,
-			   SPRD_DVFS_INDEX_DEFAULT);
 
 	pfdev->sprd = sprd;
 
@@ -303,4 +344,27 @@ void panfrost_sprd_fini(struct panfrost_device *pfdev)
 
 	sprd_gpu_power_off(sprd);
 	pfdev->sprd = NULL;
+}
+
+/*
+ * System sleep.  The GPU is its own PMU power domain (PD_GPU) with no auto
+ * shutdown, so unless it is forced off it stays powered through suspend --
+ * and with it the GPLL and the AON GPU_EB gate.  The AP subsystem never
+ * reaches PMU deep sleep then (AP_DEEP_SLEEP_CNT stays 0); the stock kernel
+ * forces it off whenever the GPU is idle.  Called with the GPU already
+ * runtime suspended and before its clocks are gated; resume runs before
+ * panfrost touches a GPU register again.
+ */
+void panfrost_sprd_suspend(struct panfrost_device *pfdev)
+{
+	if (pfdev->sprd)
+		sprd_gpu_stop(pfdev->sprd);
+}
+
+int panfrost_sprd_resume(struct panfrost_device *pfdev)
+{
+	if (!pfdev->sprd)
+		return 0;
+
+	return sprd_gpu_start(pfdev, pfdev->sprd);
 }
