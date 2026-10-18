@@ -901,80 +901,6 @@ int sc2355_tx_do_csum(const unsigned char *buff, int len){
 	return tx_do_csum(buff, len);
 }
 
-static int tx_is_multicast_mac_addr(const u8 *addr)
-{
-	return ((addr[0] != 0xff) && (0x01 & addr[0]));
-}
-
-static int tx_mc_pkt_checksum(struct sk_buff *skb, struct net_device *ndev)
-{
-	struct udphdr *udphdr;
-	struct tcphdr *tcphdr;
-	struct ipv6hdr *ipv6hdr = NULL;
-	struct iphdr *iphdr = NULL;
-	__sum16 checksum = 0;
-	unsigned char iphdrlen = 0;
-	struct ethhdr *ethhdr = (struct ethhdr *)skb->data;
-
-	if (ethhdr->h_proto == htons(ETH_P_IPV6)) {
-		ipv6hdr = (struct ipv6hdr *)(skb->data + ETHER_HDR_LEN);
-		iphdrlen = sizeof(*ipv6hdr);
-	} else {
-		iphdr = (struct iphdr *)(skb->data + ETHER_HDR_LEN);
-		iphdrlen = ip_hdrlen(skb);
-	}
-
-	udphdr = (struct udphdr *)(skb->data + ETHER_HDR_LEN + iphdrlen);
-	tcphdr = (struct tcphdr *)(skb->data + ETHER_HDR_LEN + iphdrlen);
-
-	if (skb->ip_summed == CHECKSUM_PARTIAL) {
-		checksum =
-		    (__force __sum16)tx_do_csum(skb->data + ETHER_HDR_LEN +
-						iphdrlen,
-						skb->len - ETHER_HDR_LEN -
-						iphdrlen);
-		if ((ipv6hdr && ipv6hdr->nexthdr == IPPROTO_UDP) ||
-		    (iphdr && iphdr->protocol == IPPROTO_UDP)) {
-			udphdr->check = ~checksum;
-			wl_info("csum:%x,udp check:%x\n",
-				checksum, udphdr->check);
-		} else if ((ipv6hdr && ipv6hdr->nexthdr == IPPROTO_TCP) ||
-			   (iphdr && iphdr->protocol == IPPROTO_TCP)) {
-			tcphdr->check = ~checksum;
-			wl_info("csum:%x,tcp check:%x\n",
-				checksum, tcphdr->check);
-		} else {
-			return 1;
-		}
-		skb->ip_summed = CHECKSUM_NONE;
-		return 0;
-	}
-	return 1;
-}
-
-static int tx_mc_pkt(struct sk_buff *skb, struct net_device *ndev)
-{
-	struct sprd_vif *vif;
-	struct sprd_hif *hif;
-	struct ethhdr *ethhdr = (struct ethhdr *)skb->data;
-
-	vif = netdev_priv(ndev);
-	hif = &vif->priv->hif;
-
-	if (hif->hw_type == SPRD_HW_SC2355_SIPC &&
-	    ethhdr->h_proto == htons(ETH_P_IP))
-		return 1;
-
-	if (tx_is_multicast_mac_addr(skb->data) && vif->mode == SPRD_MODE_AP) {
-		wl_debug("%s,AP mode, multicast bssid: %pM\n",
-			 __func__, skb->data);
-		tx_mc_pkt_checksum(skb, ndev);
-		sc2355_xmit_data2cmd_wq(skb, ndev);
-		return NETDEV_TX_OK;
-	}
-	return 1;
-}
-
 static int tx_filter_ip_pkt(struct sk_buff *skb, struct net_device *ndev)
 {
 	bool is_data2cmd;
@@ -2252,8 +2178,11 @@ int sprd_tx_filter_packet(struct sk_buff *skb, struct net_device *ndev)
 
 	if (ethhdr->h_proto == htons(ETH_P_IP) ||
 	    ethhdr->h_proto == htons(ETH_P_IPV6)) {
-		if (!tx_mc_pkt(skb, ndev))
-			return NETDEV_TX_OK;
+		/* AP multicast uses the data queue; classify control traffic below.
+		 * CMD_TX_DATA has no business-packet backpressure. Keep DHCP,
+		 * VoWiFi and RTSP handling in the IP filter, without changing
+		 * ordinary multicast checksums or adding a retry poller.
+		 */
 		return tx_filter_ip_pkt(skb, ndev);
 	}
 	return 1;
