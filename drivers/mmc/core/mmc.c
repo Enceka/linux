@@ -2195,7 +2195,16 @@ static int mmc_suspend(struct mmc_host *host)
 {
 	int err;
 
-	err = _mmc_suspend(host, MMC_POWEROFF_SUSPEND);
+	/* Shared eMMC policy: system-only power retention. Runtime suspend
+	 * still uses _mmc_suspend unchanged; an already suspended card stays
+	 * suspended and will be restored by its normal runtime resume. */
+	if (!mmc_card_is_removable(host)) {
+		mmc_claim_host(host);
+		err = mmc_card_suspended(host->card) ? 0 : _mmc_flush_cache(host);
+		mmc_release_host(host);
+	} else {
+		err = _mmc_suspend(host, MMC_POWEROFF_SUSPEND);
+	}
 	if (!err) {
 		pm_runtime_disable(&host->card->dev);
 		pm_runtime_set_suspended(&host->card->dev);

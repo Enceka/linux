@@ -149,7 +149,8 @@ static inline u32 sdhci_sprd_readl(struct sdhci_host *host, int reg)
 	if (unlikely(reg == SDHCI_MAX_CURRENT))
 		return SDHCI_SPRD_MAX_CUR;
 
-	return readl_relaxed(host->ioaddr + reg);
+	/* Shared SDHCI policy: order ADMA descriptors and DMA completion. */
+	return readl(host->ioaddr + reg);
 }
 
 static inline void sdhci_sprd_writel(struct sdhci_host *host, u32 val, int reg)
@@ -161,7 +162,7 @@ static inline void sdhci_sprd_writel(struct sdhci_host *host, u32 val, int reg)
 	if (unlikely(reg == SDHCI_SIGNAL_ENABLE || reg == SDHCI_INT_ENABLE))
 		val = val & SDHCI_SPRD_INT_SIGNAL_MASK;
 
-	writel_relaxed(val, host->ioaddr + reg);
+	writel(val, host->ioaddr + reg);
 }
 
 static inline void sdhci_sprd_writew(struct sdhci_host *host, u16 val, int reg)
@@ -170,7 +171,7 @@ static inline void sdhci_sprd_writew(struct sdhci_host *host, u16 val, int reg)
 	if (unlikely(reg == SDHCI_BLOCK_COUNT))
 		return;
 
-	writew_relaxed(val, host->ioaddr + reg);
+	writew(val, host->ioaddr + reg);
 }
 
 static inline void sdhci_sprd_writeb(struct sdhci_host *host, u8 val, int reg)
@@ -188,7 +189,7 @@ static inline void sdhci_sprd_writeb(struct sdhci_host *host, u8 val, int reg)
 			val |= SDHCI_HW_RESET_CARD;
 	}
 
-	writeb_relaxed(val, host->ioaddr + reg);
+	writeb(val, host->ioaddr + reg);
 }
 
 static inline void sdhci_sprd_sd_clk_off(struct sdhci_host *host)
@@ -922,6 +923,13 @@ static int sdhci_sprd_probe(struct platform_device *pdev)
 		host->always_defer_done = true;
 
 	sprd_host = TO_SPRD_HOST(host);
+	/* Shared eMMC policy: preserve FUA durability through flush emulation.
+	 * Runtime PM, aggressive PM and CLK_AUTO retain their normal behavior. */
+	if (!mmc_card_is_removable(host->mmc) &&
+	    !(host->mmc->caps2 & MMC_CAP2_NO_MMC) &&
+	    of_property_match_string(pdev->dev.of_node, "sprd,name", "sdio_wlan") < 0 &&
+	    of_property_match_string(pdev->dev.of_node, "sprd,name", "sdio_sd") < 0)
+		host->mmc->caps2 |= MMC_CAP2_NO_REL_WR;
 	sdhci_sprd_phy_param_parse(sprd_host, pdev->dev.of_node);
 
 	/*
