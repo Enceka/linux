@@ -855,6 +855,58 @@ int sprd_cfg80211_change_station(struct wiphy *wiphy, struct net_device *ndev,
 	return 0;
 }
 
+/* AP peers are authoritative; GET_STATION firmware data is STA-wide. */
+static bool sprd_ap_peer(struct sprd_vif *vif, const u8 *mac)
+{
+	struct sprd_hif *hif = &vif->priv->hif;
+	int i;
+
+	if (!is_valid_ether_addr(mac) || ether_addr_equal(mac, vif->ndev->dev_addr))
+		return false;
+	for (i = 0; i < MAX_LUT_NUM; i++) {
+		if (READ_ONCE(hif->peer_entry[i].ctx_id) == vif->ctx_id &&
+		    ether_addr_equal(hif->peer_entry[i].tx.da, mac))
+			return true;
+	}
+	return false;
+}
+
+static int sprd_cfg80211_dump_station(struct wiphy *wiphy, struct net_device *ndev,
+				     int idx, u8 *mac, struct station_info *sinfo)
+{
+	struct sprd_vif *vif = netdev_priv(ndev);
+	struct sprd_hif *hif = &vif->priv->hif;
+	u8 peer[ETH_ALEN];
+	int i, n = 0;
+
+	if (idx < 0 || (vif->wdev.iftype != NL80211_IFTYPE_AP &&
+			vif->wdev.iftype != NL80211_IFTYPE_P2P_GO))
+		return -ENOENT;
+	for (i = 0; i < MAX_LUT_NUM; i++) {
+		if (READ_ONCE(hif->peer_entry[i].ctx_id) != vif->ctx_id)
+			continue;
+		ether_addr_copy(peer, hif->peer_entry[i].tx.da);
+		if (!sprd_ap_peer(vif, peer) || n++ != idx)
+			continue;
+		ether_addr_copy(mac, peer);
+		sinfo->filled = 0;
+		return 0;
+	}
+	return -ENOENT;
+}
+
+static int sprd_cfg80211_get_channel(struct wiphy *wiphy, struct wireless_dev *wdev,
+				    unsigned int link_id, struct cfg80211_chan_def *chandef)
+{
+	/* This non-MLO driver only has the default link. Check before indexing. */
+	if (link_id != 0 || (wdev->iftype != NL80211_IFTYPE_AP &&
+			    wdev->iftype != NL80211_IFTYPE_P2P_GO) ||
+	    !wdev->links[0].ap.chandef.chan)
+		return -ENODATA;
+	*chandef = wdev->links[0].ap.chandef;
+	return 0;
+}
+
 int sprd_cfg80211_get_station(struct wiphy *wiphy, struct net_device *ndev,
 			      const u8 *mac, struct station_info *sinfo)
 {
@@ -863,6 +915,15 @@ int sprd_cfg80211_get_station(struct wiphy *wiphy, struct net_device *ndev,
 	struct sprd_rate_info *tx_rate = NULL;
 	struct sprd_rate_info *rx_rate = NULL;
 	int ret;
+
+	/* AP firmware has no addressed per-peer RSSI/rate/counter command. */
+	if (vif->wdev.iftype == NL80211_IFTYPE_AP ||
+	    vif->wdev.iftype == NL80211_IFTYPE_P2P_GO) {
+		if (!sprd_ap_peer(vif, mac))
+			return -ENOENT;
+		sinfo->filled = 0;
+		return 0;
+	}
 
 	sinfo->filled |= BIT(NL80211_STA_INFO_TX_BYTES) |
 	    BIT(NL80211_STA_INFO_TX_PACKETS) |
@@ -1805,6 +1866,8 @@ static struct cfg80211_ops sprd_cfg80211_ops = {
 	.del_station = sprd_cfg80211_del_station,
 	.change_station = sprd_cfg80211_change_station,
 	.get_station = sprd_cfg80211_get_station,
+	.dump_station = sprd_cfg80211_dump_station,
+	.get_channel = sprd_cfg80211_get_channel,
 	.libertas_set_mesh_channel = sprd_cfg80211_set_channel,
 	.scan = sprd_cfg80211_scan,
 	.connect = sprd_cfg80211_connect,
