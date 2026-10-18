@@ -48,17 +48,20 @@ static int virtual_thm_get_temp(struct thermal_zone_device *tzd, int *temp)
 		tz_list = &thm_data->tz_list[i];
 		tz = tz_list->tz_dev;
 		if (!tz || IS_ERR(tz))
-			return -EINVAL;
+			continue;
 		ret = thermal_zone_get_temp(tz, &tz_list->temp);
 		if (ret) {
-			dev_err(dev, "fail to get temp\n");
-			return ret;
+			dev_err_ratelimited(dev, "fail to get temp\n");
+			continue;
 		}
 		max_temp = max(max_temp, tz_list->temp);
 	}
+	/* PR #190: retain valid thermal readings. */
+	if (max_temp == INT_MIN)
+		return -EIO;
 	*temp = max_temp;
 
-	return ret;
+	return 0;
 }
 
 static void virtual_thm_unregister(struct platform_device *pdev)
