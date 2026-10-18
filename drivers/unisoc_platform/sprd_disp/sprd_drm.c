@@ -574,7 +574,7 @@ static int sprd_drm_probe(struct platform_device *pdev)
 {
 	int ret;
 	DRM_INFO("%s()\n", __func__);
-	ret = dma_set_mask_and_coherent(&pdev->dev, ~0);
+	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
 	if (ret) {
 		DRM_ERROR("dma_set_mask_and_coherent failed (%d)\n", ret);
 		return ret;
