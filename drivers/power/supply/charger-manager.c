@@ -1146,6 +1146,14 @@ static void cm_set_charger_present(struct charger_manager *cm, bool present)
 			continue;
 		}
 
+		/* Only chargers declaring PRESENT writable consume this notification.
+		 * AW32257 has no setter; BQ2560x explicitly advertises one. */
+		if (!psy->desc->property_is_writeable ||
+		    !psy->desc->property_is_writeable(psy, POWER_SUPPLY_PROP_PRESENT)) {
+			power_supply_put(psy);
+			continue;
+		}
+
 		val.intval = present;
 		ret = power_supply_set_property(psy, POWER_SUPPLY_PROP_PRESENT, &val);
 		power_supply_put(psy);
@@ -4055,6 +4063,10 @@ static int cm_set_primary_charge_wirless_type(struct charger_manager *cm, bool e
 static void try_wireless_charger_enable(struct charger_manager *cm, bool enable)
 {
 	int ret = 0;
+
+	/* A wired-only board has no wireless type to clear. */
+	if (!cm->desc->psy_wl_charger_stat || !cm->desc->psy_wl_charger_stat[0])
+		return;
 
 	ret = cm_set_primary_charge_wirless_type(cm, enable);
 	if (ret) {
