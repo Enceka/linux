@@ -20,3 +20,15 @@ config SPRD_VPU_PW_DOMAIN
 	  genpd core returns -EPROBE_DEFER and no display device ever
 	  probes.  Stock ships this as sprd-vpu-pw-domain.ko in
 	  vendor_dlkm; here it is built in-tree from the vendor source.
+
+config SPRD_CAMSYS_PD
+	bool "UMS9621 camera subsystem power domain"
+	depends on ARCH_SPRD || COMPILE_TEST
+	depends on MFD_SYSCON
+	select PM_GENERIC_DOMAINS if PM
+	help
+	  Generic PM domain for the UMS9621 camera block
+	  ("sprd,qogirl6l-camsys-domain").  The bootloader leaves the
+	  domain powered, and while it is on the AP subsystem cannot
+	  enter PMU deep sleep in system suspend.  The domain starts off
+	  and is powered only while a consumer is runtime active.

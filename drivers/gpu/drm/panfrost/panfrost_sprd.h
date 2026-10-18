@@ -12,5 +12,7 @@ struct panfrost_device;
 
 int panfrost_sprd_init(struct panfrost_device *pfdev);
 void panfrost_sprd_fini(struct panfrost_device *pfdev);
+void panfrost_sprd_suspend(struct panfrost_device *pfdev);
+int panfrost_sprd_resume(struct panfrost_device *pfdev);
 
 #endif /* __PANFROST_SPRD_H__ */
