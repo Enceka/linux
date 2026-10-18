@@ -43,7 +43,6 @@
 #define SIPA_ETH_NAPI_WEIGHT 64
 #define SIPA_ETH_IFACE_PREF "sipa_eth"
 
-static unsigned long queue_lock_flags;
 static spinlock_t queue_lock; /* spin-lock for queue status protection */
 
 #ifdef CONFIG_DEBUG_FS
@@ -55,13 +54,14 @@ static void sipa_eth_flowctrl_handler(void *priv, int flowctrl)
 {
 	struct sipa_eth *sipa_eth = (struct sipa_eth *)priv;
 	struct net_device *dev = sipa_eth->netdev;
+	unsigned long flags;
 
 	if (flowctrl) {
 		netif_stop_queue(dev);
 	} else if (netif_queue_stopped(dev)) {
-		spin_lock_irqsave(&queue_lock, queue_lock_flags);
+		spin_lock_irqsave(&queue_lock, flags);
 		netif_wake_queue(dev);
-		spin_unlock_irqrestore(&queue_lock, queue_lock_flags);
+		spin_unlock_irqrestore(&queue_lock, flags);
 		pr_info("wakeup queue on dev %s\n", dev->name);
 	}
 }
@@ -93,6 +93,9 @@ static netdev_tx_t sipa_eth_start_xmit(struct sk_buff *skb,
 	int ret = 0;
 	int netid;
 	unsigned int len;
+	bool pushed_header = false;
+	unsigned long flags;
+	__sum16 *checksum = NULL, saved_checksum = 0;
 	struct iphdr *iph;
 	struct ipv6hdr *ipv6h;
 
@@ -107,7 +110,7 @@ static netdev_tx_t sipa_eth_start_xmit(struct sk_buff *skb,
 	if (unlikely(ret)) {
 		stats->tx_dropped++;
 		dev_kfree_skb_any(skb);
-		return ret;
+		return NETDEV_TX_OK;
 	}
 
 	netid = pdata->netid;
@@ -117,15 +120,19 @@ static netdev_tx_t sipa_eth_start_xmit(struct sk_buff *skb,
 		if (skb->protocol == htons(ETH_P_IP)) {
 			iph = ip_hdr(skb);
 			if (iph->protocol == IPPROTO_TCP)
-				tcp_hdr(skb)->check = 0;
+				checksum = &tcp_hdr(skb)->check;
 			else if (iph->protocol == IPPROTO_UDP)
-				udp_hdr(skb)->check = 0;
+				checksum = &udp_hdr(skb)->check;
 		} else if (skb->protocol == htons(ETH_P_IPV6)) {
 			ipv6h = ipv6_hdr(skb);
 			if (ipv6h->nexthdr == NEXTHDR_TCP)
-				tcp_hdr(skb)->check = 0;
+				checksum = &tcp_hdr(skb)->check;
 			else if (ipv6h->nexthdr == NEXTHDR_UDP)
-				udp_hdr(skb)->check = 0;
+				checksum = &udp_hdr(skb)->check;
+		}
+		if (checksum) {
+			saved_checksum = *checksum;
+			*checksum = 0;
 		}
 	}
 
@@ -133,25 +140,29 @@ static netdev_tx_t sipa_eth_start_xmit(struct sk_buff *skb,
 	 * the IPv6 forwarding packet is without ethernet header
 	 */
 	if (likely(skb_headroom(skb) >= ETH_HLEN)) {
-		if (skb->mac_header == skb->network_header)
+		if (skb->mac_header == skb->network_header) {
 			skb_push(skb, ETH_HLEN);
+			pushed_header = true;
+		}
 	}
 
 	ret = sipa_nic_tx(sipa_eth->nic_id, pdata->src_id, netid, skb);
 	if (unlikely(ret != 0)) {
-        pr_err("%s fail to send, ret %d\n",
-               dev->name, ret);
-        stats->tx_dropped++;
-		stats->tx_errors++;
-        if (ret == -EAGAIN ||
-            sipa_nic_check_flow_ctrl(sipa_eth->nic_id)) {
-            spin_lock_irqsave(&queue_lock, queue_lock_flags);
+		/* BUSY leaves the packet with the stack, including its csum seed. */
+		if (checksum)
+			*checksum = saved_checksum;
+		if (pushed_header)
+			skb_pull(skb, ETH_HLEN);
+		spin_lock_irqsave(&queue_lock, flags);
+		if (ret == -EAGAIN || sipa_nic_check_flow_ctrl(sipa_eth->nic_id))
 			netif_stop_queue(dev);
-            spin_unlock_irqrestore(&queue_lock, queue_lock_flags);
-			pr_info("stop queue on dev %s\n", dev->name);
-            return NETDEV_TX_BUSY;
-		}
+		spin_unlock_irqrestore(&queue_lock, flags);
+		/* Like MU300: arm recovery even after the queue has been stopped. */
 		sipa_nic_trigger_flow_ctrl_work(sipa_eth->nic_id, ret);
+		if (ret != -EAGAIN && ret != -EINPROGRESS) {
+			stats->tx_errors++;
+			pr_err_ratelimited("%s fail to send, ret %d\n", dev->name, ret);
+		}
 		return NETDEV_TX_BUSY;
 	}
 

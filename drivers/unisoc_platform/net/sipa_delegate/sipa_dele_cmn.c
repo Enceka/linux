@@ -334,7 +334,7 @@ static int sipa_dele_local_rls_r_prod(void *user_data)
 		break;
 	case SIPA_DELE_REQUESTING:
 		delegator->stat = SIPA_DELE_RELEASING;
-		sipa_dele_start_rls_work(delegator);
+		/* Wait for REQUEST completion; on_done emits exactly one RELEASE. */
 		ret = -EINPROGRESS;
 		break;
 	case SIPA_DELE_RELEASING:
@@ -469,8 +469,7 @@ int sipa_delegator_start(struct sipa_delegator *delegator)
 	int ret;
 
 	pr_debug("prod_id:%d\n", delegator->prod_id);
-	/* start monitor thread */
-	wake_up_process(delegator->thread);
+	/* cp_delegator_init starts the thread after all setup succeeds. */
 
 	/* sipa resource manage operations */
 	rm_params.name = delegator->prod_id;
@@ -486,6 +485,9 @@ int sipa_delegator_start(struct sipa_delegator *delegator)
 
 	ret = sipa_rm_add_dependency(delegator->cons_prod,
 				     delegator->prod_id);
+	/* Like MU300: the asynchronous grant is a valid dependency. */
+	if (ret == -EINPROGRESS)
+		ret = 0;
 	if (ret)
 		goto del_res;
 
