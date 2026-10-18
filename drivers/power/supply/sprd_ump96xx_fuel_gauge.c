@@ -723,6 +723,7 @@ static bool ump96xx_fgu_is_first_poweron(struct sprd_fgu_info *info)
 	return false;
 }
 
+/* Match the stock FGU masked-write sequence, including unchanged-value handling. */
 static int ump96xx_fgu_save_boot_mode(struct sprd_fgu_info *info, int boot_mode)
 {
 	int ret;
@@ -796,6 +797,15 @@ static int ump96xx_fgu_read_last_cap(struct sprd_fgu_info *info, int *cap)
 	if (ret)
 		return ret;
 
+	/* Retained SOC is percent in bits 7:0 and tenths in bits 11:8.
+	 * Reject invalid metadata; never let a decoded value become false 100%.
+	 */
+	if ((value & UMP96XX_FGU_CAP_INTEGER_MASK) > 100 ||
+	    ((value >> UMP96XX_FGU_CAP_DECIMAL_SHIFT) & UMP96XX_FGU_CAP_DECIMAL_MASK) > 9 ||
+	    ((value & UMP96XX_FGU_CAP_INTEGER_MASK) == 100 &&
+	     ((value >> UMP96XX_FGU_CAP_DECIMAL_SHIFT) & UMP96XX_FGU_CAP_DECIMAL_MASK)))
+		return -ERANGE;
+
 	*cap = (value & UMP96XX_FGU_CAP_INTEGER_MASK) * 10;
 	*cap += (value >> UMP96XX_FGU_CAP_DECIMAL_SHIFT) & UMP96XX_FGU_CAP_DECIMAL_MASK;
 
@@ -812,6 +822,15 @@ static int ump96xx_fgu_read_normal_temperature_cap(struct sprd_fgu_info *info, i
 	if (ret)
 		return ret;
 
+	/* Retained SOC is percent in bits 7:0 and tenths in bits 11:8.
+	 * Reject invalid metadata; never let a decoded value become false 100%.
+	 */
+	if ((value & UMP96XX_FGU_CAP_INTEGER_MASK) > 100 ||
+	    ((value >> UMP96XX_FGU_CAP_DECIMAL_SHIFT) & UMP96XX_FGU_CAP_DECIMAL_MASK) > 9 ||
+	    ((value & UMP96XX_FGU_CAP_INTEGER_MASK) == 100 &&
+	     ((value >> UMP96XX_FGU_CAP_DECIMAL_SHIFT) & UMP96XX_FGU_CAP_DECIMAL_MASK)))
+		return -ERANGE;
+
 	*cap = (value & UMP96XX_FGU_CAP_INTEGER_MASK) * 10;
 	*cap += (value >> UMP96XX_FGU_CAP_DECIMAL_SHIFT) & UMP96XX_FGU_CAP_DECIMAL_MASK;
 
@@ -822,6 +841,9 @@ static int ump96xx_fgu_save_last_cap(struct sprd_fgu_info *info, int cap)
 {
 	int ret;
 	u32 value;
+
+	if (cap < 0 || cap > UMP96XX_FGU_FCC_PERCENT)
+		return -ERANGE;
 
 	ret = regmap_update_bits(info->regmap,
 				 info->base + UMP96XX_FGU_USER_AREA_CLEAR0,
@@ -897,6 +919,9 @@ static int ump96xx_fgu_save_normal_temperature_cap(struct sprd_fgu_info *info, i
 		dev_info(info->dev, "normal_cap = %#x\n", cap);
 		return ret;
 	}
+
+	if (cap < 0 || cap > UMP96XX_FGU_FCC_PERCENT)
+		return -ERANGE;
 
 	ret = regmap_update_bits(info->regmap,
 				 info->base + UMP96XX_FGU_USER_AREA_CLEAR1,

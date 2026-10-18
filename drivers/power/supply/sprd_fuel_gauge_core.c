@@ -1162,87 +1162,61 @@ static void sprd_fgu_boot_cap_calibration(struct sprd_fgu_data *data,
  */
 static int sprd_fgu_get_boot_capacity(struct sprd_fgu_data *data, int *cap)
 {
-	int pocv_uv, ret, pocv_cap;
+	int pocv_uv, ret, pocv_cap, saved_ui = -1, normal_cap = -1, ui_cap;
 	struct sprd_fgu_info *fgu_info = data->fgu_info;
-	bool is_first_poweron = fgu_info->ops->is_first_poweron(fgu_info);
+	bool first = fgu_info->ops->is_first_poweron(fgu_info);
+	bool recovered;
 
 	ret = sprd_fgu_get_boot_voltage(data, &pocv_uv);
-	if (ret) {
-		dev_err(data->dev, "Failed to get boot voltage, ret = %d\n", ret);
+	if (ret)
 		return ret;
-	}
 	data->boot_volt_uv = pocv_uv;
-
-	/*
-	 * Parse the capacity table to look up the correct capacity percent
-	 * according to current battery's corresponding OCV values.
-	 */
 	pocv_cap = sprd_fgu_ocv2cap(data->cap_table, data->table_len, pocv_uv);
 
-	/*
-	 * If system is not the first power on, we should use the last saved
-	 * battery capacity as the initial battery capacity. Otherwise we should
-	 * re-calculate the initial battery capacity.
-	 */
-	if (!is_first_poweron) {
-		ret = fgu_info->ops->read_last_cap(fgu_info, cap);
-		if (ret) {
-			dev_err(data->dev, "Failed to read last cap, ret = %d\n", ret);
+	if (!first) {
+		ret = fgu_info->ops->read_last_cap(fgu_info, &saved_ui);
+		if (ret && ret != -ERANGE)
+			return ret; /* An I/O failure is not permission to invent a SOC. */
+		if (ret || saved_ui < 0 || saved_ui > SPRD_FGU_FCC_PERCENT)
+			saved_ui = -1;
+		ret = fgu_info->ops->read_normal_temperature_cap(fgu_info, &normal_cap);
+		if (ret && ret != -ERANGE)
 			return ret;
-		}
-
-		data->boot_cap = *cap;
-		ret = fgu_info->ops->read_normal_temperature_cap(fgu_info, cap);
-		if (ret) {
-			dev_err(data->dev, "Failed to read normal temperature cap, ret = %d\n",
-				ret);
-			sprd_fgu_boot_cap_calibration(data, pocv_cap, pocv_uv, cap);
-			return ret;
-		}
-
-		if (*cap == SPRD_FGU_DEFAULT_CAP || *cap == SPRD_FGU_RTC2_RESET_VALUE) {
-			*cap = data->boot_cap;
-			sprd_fgu_boot_cap_calibration(data, pocv_cap, pocv_uv, cap);
-			ret = fgu_info->ops->save_normal_temperature_cap(fgu_info, *cap);
-			if (ret < 0)
-				dev_err(data->dev, "Failed to initialize fgu user area status1 register\n");
-		} else {
-			sprd_fgu_boot_cap_calibration(data, pocv_cap, pocv_uv, cap);
-		}
-
-		data->normal_temp_cap = *cap;
-		ret = fgu_info->ops->save_normal_temperature_cap(fgu_info, data->normal_temp_cap);
-		if (ret) {
-			dev_err(data->dev, "Failed to save normal temperature capacity, ret = %d\n",
-				ret);
-			return ret;
-		}
-
-		dev_info(data->dev, "init: boot_cap = %d, normal_cap = %d\n", data->boot_cap, *cap);
-
-		return fgu_info->ops->save_boot_mode(fgu_info, SPRD_FGU_NORMAL_POWERON);
+		if (ret || normal_cap < 0 || normal_cap > SPRD_FGU_FCC_PERCENT)
+			normal_cap = -1;
 	}
 
-	*cap = pocv_cap;
-	sprd_fgu_capacity_loss_by_temperature(data, cap);
-	data->boot_cap = sprd_fgu_capacity_remap(data, *cap);
-	ret = fgu_info->ops->save_last_cap(fgu_info, data->boot_cap);
-	if (ret) {
-		dev_err(data->dev, "Failed to save last cap, ret = %d\n", ret);
-		return ret;
+	recovered = !first && (saved_ui < 0 || normal_cap < 0);
+	if (normal_cap >= 0) {
+		*cap = normal_cap;
+		sprd_fgu_boot_cap_calibration(data, pocv_cap, pocv_uv, cap);
+	} else if (saved_ui >= 0) {
+		/* Preserve the vendor fallback when the second retained area resets. */
+		*cap = saved_ui;
+		sprd_fgu_boot_cap_calibration(data, pocv_cap, pocv_uv, cap);
+	} else {
+		/* Only first power-on or invalid retained metadata uses voltage. */
+		*cap = pocv_cap;
 	}
-
-	data->normal_temp_cap = pocv_cap;
+	data->normal_temp_cap = *cap;
+	ui_cap = *cap;
+	if (saved_ui < 0) {
+		sprd_fgu_capacity_loss_by_temperature(data, &ui_cap);
+		saved_ui = sprd_fgu_capacity_remap(data, ui_cap);
+		ret = fgu_info->ops->save_last_cap(fgu_info, saved_ui);
+		if (ret)
+			return ret;
+	}
+	data->boot_cap = saved_ui;
 	ret = fgu_info->ops->save_normal_temperature_cap(fgu_info, data->normal_temp_cap);
-	if (ret) {
-		dev_err(data->dev, "Failed to save normal temperature capacity, ret = %d\n", ret);
+	if (ret)
 		return ret;
+	if (first) {
+		data->is_first_poweron = true;
 	}
-
-	data->is_first_poweron = true;
-	dev_info(data->dev, "First_poweron: pocv_uv = %d, pocv_cap = %d, boot_cap = %d\n",
-		 pocv_uv, pocv_cap, data->boot_cap);
-	*cap = pocv_cap;
+	dev_info(data->dev, "SOC restore: ui=%d normal=%d first=%d recovered=%d\n",
+		 data->boot_cap, data->normal_temp_cap, first,
+		 recovered);
 	return fgu_info->ops->save_boot_mode(fgu_info, SPRD_FGU_NORMAL_POWERON);
 }
 
@@ -2032,12 +2006,57 @@ error:
 	return ret;
 }
 
+
+static int sprd_fgu_save_capacity(struct sprd_fgu_data *data, int ui_cap)
+{
+	struct sprd_fgu_info *info = data->fgu_info;
+	int attempt, ret, actual = -1;
+
+	if (ui_cap < 0 || ui_cap > SPRD_FGU_FCC_PERCENT)
+		return -ERANGE;
+	if (data->normal_temp_cap != SPRD_FGU_MAGIC_NUMBER &&
+	    (data->normal_temp_cap < 0 || data->normal_temp_cap > SPRD_FGU_FCC_PERCENT))
+		return -ERANGE;
+	for (attempt = 0; attempt < 2; attempt++) {
+		actual = -1;
+		ret = info->ops->save_last_cap(info, ui_cap);
+		if (ret)
+			continue;
+		ret = info->ops->read_last_cap(info, &actual);
+		if (!ret && actual == ui_cap)
+			break;
+		if (!ret)
+			ret = -EIO;
+	}
+	if (ret) {
+		dev_err(data->dev, "SOC retention UI: requested=%d read=%d ret=%d\n",
+			ui_cap, actual, ret);
+		return ret;
+	}
+	if (data->normal_temp_cap == SPRD_FGU_MAGIC_NUMBER)
+		return 0;
+	for (attempt = 0; attempt < 2; attempt++) {
+		actual = -1;
+		ret = info->ops->save_normal_temperature_cap(info, data->normal_temp_cap);
+		if (ret)
+			continue;
+		ret = info->ops->read_normal_temperature_cap(info, &actual);
+		if (!ret && actual == data->normal_temp_cap)
+			return 0;
+		if (!ret)
+			ret = -EIO;
+	}
+	dev_err(data->dev, "SOC retention normal: requested=%d read=%d ret=%d\n",
+		data->normal_temp_cap, actual, ret);
+	return ret;
+}
+
 static int sprd_fgu_set_property(struct power_supply *psy,
 				 enum power_supply_property psp,
 				 const union power_supply_propval *val)
 {
 	struct sprd_fgu_data *data = power_supply_get_drvdata(psy);
-	int ret = 0, ui_cap, normal_cap;
+	int ret = 0;
 	struct sprd_fgu_info *fgu_info;
 	struct timespec64 cur_time;
 
@@ -2061,46 +2080,9 @@ static int sprd_fgu_set_property(struct power_supply *psy,
 
 	switch (psp) {
 	case POWER_SUPPLY_PROP_CAPACITY:
-		dev_dbg(data->dev, "%s:line%d ui_cap = %d, normal_cap = %d\n",
-			__func__, __LINE__, val->intval, data->normal_temp_cap);
-		ret = fgu_info->ops->save_last_cap(fgu_info, val->intval);
-		if (ret < 0)
-			dev_err(data->dev, "failed to save battery capacity\n");
-
-		ret = fgu_info->ops->save_normal_temperature_cap(fgu_info, data->normal_temp_cap);
-		if (ret < 0)
-			dev_err(data->dev, "failed to save normal temperature capacity\n");
-
-		ret = fgu_info->ops->read_last_cap(fgu_info, &ui_cap);
-		if (ret < 0) {
-			ui_cap = -1;
-			dev_err(data->dev, "failed to read ui capacity\n");
-		}
-
-		if (val->intval != ui_cap) {
-			dev_info(data->dev, "ui cap save failed, save it again! save_cap = %d, read_cap = %d\n",
-				 val->intval, ui_cap);
-			ret = fgu_info->ops->save_last_cap(fgu_info, val->intval);
-			if (ret < 0)
-				dev_err(data->dev, "%d failed to save battery capacity\n",
-					__LINE__);
-		}
-
-		ret = fgu_info->ops->read_normal_temperature_cap(fgu_info, &normal_cap);
-		if (ret < 0) {
-			normal_cap = -1;
-			dev_err(data->dev, "failed to read normal capacity\n");
-		}
-
-		if (data->normal_temp_cap != normal_cap) {
-			dev_info(data->dev, "normal cap save failed, save it again! save_cap = %d, read_cap = %d\n",
-				 data->normal_temp_cap, normal_cap);
-			ret = fgu_info->ops->save_normal_temperature_cap(fgu_info,
-									 data->normal_temp_cap);
-			if (ret < 0)
-				dev_err(data->dev, "%d failed to save normal temperature capacity\n",
-					__LINE__);
-		}
+		ret = sprd_fgu_save_capacity(data, val->intval);
+		if (ret)
+			dev_err(data->dev, "Failed to persist verified SOC: %d\n", ret);
 		break;
 
 	case POWER_SUPPLY_PROP_STATUS:

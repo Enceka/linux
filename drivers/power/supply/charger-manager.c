@@ -1405,71 +1405,6 @@ static bool cm_primary_charger_enable(struct charger_manager *cm, bool enable)
 	return true;
 }
 
-static bool check_charge_done(struct charger_manager *cm)
-{
-	int i, ret;
-	bool done = false;
-	struct power_supply *psy;
-	union power_supply_propval val;
-
-	/* If there is no battery, it cannot be charged */
-	if (!is_batt_present(cm))
-		return false;
-	if(!cm->charger_enabled)
-		return false;
-
-	/* If at least one of the charger is charging, return yes */
-	for (i = 0; cm->desc->psy_charger_stat[i]; i++) {
-		/* 1. The charger sholuld not be DISABLED */
-		if (cm->emergency_stop)
-			continue;
-		if (!cm->charger_enabled)
-			continue;
-
-		psy = power_supply_get_by_name(cm->desc->psy_charger_stat[i]);
-		if (!psy) {
-			dev_err(cm->dev, "Cannot find power supply \"%s\"\n",
-					cm->desc->psy_charger_stat[i]);
-			continue;
-		}
-
-		/* 2. The charger should be online (ext-power) */
-		ret = power_supply_get_property(psy, POWER_SUPPLY_PROP_CHARGE_FULL,
-				&val);
-		if (ret) {
-			dev_warn(cm->dev, "Cannot read charge full value from %s\n",
-				 cm->desc->psy_charger_stat[i]);
-			power_supply_put(psy);
-			continue;
-		}
-		if (val.intval == 0) {
-			power_supply_put(psy);
-			continue;
-		}
-
-		/*
-		 * 3. The charger should not be FULL, DISCHARGING,
-		 * or NOT_CHARGING.
-		 */
-		ret = power_supply_get_property(psy, POWER_SUPPLY_PROP_CHARGE_FULL,
-				&val);
-		power_supply_put(psy);
-		if (ret) {
-			dev_warn(cm->dev, "Cannot read done value from %s\n",
-				 cm->desc->psy_charger_stat[i]);
-			continue;
-		}
-		if (val.intval == true)
-		{
-			/* Then, this is charge done. */
-			done = true;
-			break;
-		}
-	}
-
-	return done;
-}
-
 /**
  * is_full_charged - Returns true if the battery is fully charged.
  * @cm: the Charger Manager representing the battery.
@@ -1482,11 +1417,6 @@ static bool is_full_charged(struct charger_manager *cm)
 	bool is_full = false;
 	int ret = 0;
 	int uV, uA;
-
-	if (cm->desc->cap >= CM_CAP_FULL_PERCENT)
-		is_full = true;
-
-	return is_full;
 
 	/* If there is no battery, it cannot be charged */
 	if (!is_batt_present(cm))
@@ -1528,6 +1458,8 @@ static bool is_full_charged(struct charger_manager *cm)
 
 			if ((u32)batt_ocv > (cm->desc->fullbatt_uV - cm->desc->fullbatt_vchkdrop_uV))
 				is_full = true;
+			else
+				desc->force_set_full = false;
 			goto out;
 		}
 
@@ -1548,8 +1480,6 @@ static bool is_full_charged(struct charger_manager *cm)
 				} else {
 					is_full = false;
 					adjust_fuel_cap(cm, CM_FORCE_SET_FUEL_CAP_FULL);
-					if (desc->trigger_cnt == 2)
-						cm_primary_charger_enable(cm, false);
 				}
 				cm->desc->force_set_full = true;
 			} else {
@@ -8045,12 +7975,7 @@ static void cm_batt_works(struct work_struct *work)
 	static int last_fuel_cap = CM_MAGIC_NUM;
 	int work_cycle = CM_CAP_CYCLE_TRACK_TIME_15S;
 
-#define CHARGE_FULL_SOC_VALUE 970
-/* CHARGE_SOC_VALUE_FACTOR = (1000 * 1000) / 970 integer*/
-#define CHARGE_SOC_VALUE_FACTOR 1031
-	static bool charge_done=false;
-	int fuel_cap_buf = 0;
-	static int term_vol;
+	int recharge_uv, term_vol = 0;
 
 	ret = get_vbat_now_uV(cm, &batt_uV);
 	if (ret) {
@@ -8181,7 +8106,6 @@ static void cm_batt_works(struct work_struct *work)
 		 cm->desc->charger_type, board_temp, cur_temp,
 		 cm->desc->thm_info.thm_adjust_cur/1000, cm->desc->thm_info.thm_pwr/1000,
 		 cm->desc->is_fast_charge, cm->desc->enable_fast_charge, term_vol/1000,ffs_status/1000);
-#if 0
 	switch (cm->desc->charger_status) {
 	case POWER_SUPPLY_STATUS_CHARGING:
 		last_fuel_cap = fuel_cap;
@@ -8318,7 +8242,6 @@ static void cm_batt_works(struct work_struct *work)
 	default:
 		break;
 	}
-#endif
 	work_cycle = cm_calc_batt_works_cycle(cm, fuel_cap);
 
 	if (batt_uV < CM_UVLO_CALIBRATION_VOLTAGE_THRESHOLD) {
@@ -8326,46 +8249,22 @@ static void cm_batt_works(struct work_struct *work)
 		queue_delayed_work(system_unbound_wq, &cm->uvlo_work, msecs_to_jiffies(100));
 	}
 
-	if (fuel_cap >= CHARGE_FULL_SOC_VALUE) {
-		fuel_cap_buf = 1000;
-	}else if (fuel_cap < 50)
-		fuel_cap_buf = fuel_cap;
-	else {
-		fuel_cap_buf = (fuel_cap * CHARGE_SOC_VALUE_FACTOR) / 1000;
-	}
-
-	if( (!charge_done)  &&  check_charge_done(cm)  && term_vol>=4400000 && batt_uV > 4300000)
-	{
-		charge_done = true;
-		dev_err(cm->dev, "%s;full;fuel_cap=%d,%d,\n", __func__,
-			 fuel_cap, cm->desc->cap);
-		fuel_cap = 1000;
-		fuel_cap_buf = 1000;
-
-		adjust_fuel_cap(cm, fuel_cap);
-	}
-	else if ( !check_charge_done(cm))
-		charge_done = false;
-
-	dev_info(cm->dev, "fuel = %d, cm->desc->cap = %d,  fuel_cap_buf = %d\n",
-		 fuel_cap, cm->desc->cap, fuel_cap_buf);
-
-	if (fuel_cap_buf != cm->desc->cap) {
-		if (DIV_ROUND_CLOSEST(fuel_cap_buf, 10) != DIV_ROUND_CLOSEST(cm->desc->cap, 10)) {
-			cm->desc->cap = fuel_cap_buf;
+	if (fuel_cap != cm->desc->cap) {
+		if (DIV_ROUND_CLOSEST(fuel_cap, 10) != DIV_ROUND_CLOSEST(cm->desc->cap, 10)) {
+			cm->desc->cap = fuel_cap;
 			cm->desc->update_capacity_time = cur_time.tv_sec;
 			power_supply_changed(cm->charger_psy);
 		}
-
-		cm->desc->cap = fuel_cap_buf;
-	//	if (cm->desc->uvlo_trigger_cnt < CM_UVLO_CALIBRATION_CNT_THRESHOLD)
+		cm->desc->cap = fuel_cap;
+		if (cm->desc->uvlo_trigger_cnt < CM_UVLO_CALIBRATION_CNT_THRESHOLD)
 			set_batt_cap(cm, cm->desc->cap);
 	}
 
 schedule_cap_update_work:
-	queue_delayed_work(system_power_efficient_wq,
-			   &cm->cap_update_work,
-			   work_cycle * HZ);
+	if (!READ_ONCE(cm->shutdown_flag))
+		queue_delayed_work(system_power_efficient_wq,
+				   &cm->cap_update_work,
+				   work_cycle * HZ);
 }
 
 static int cm_check_alt_cp_psy_ready_status(struct charger_manager *cm)
@@ -8805,9 +8704,16 @@ static void charger_manager_shutdown(struct platform_device *pdev)
 {
 	struct charger_manager *cm = platform_get_drvdata(pdev);
 
-	cm->shutdown_flag = true;
-	if (cm->desc->uvlo_trigger_cnt < CM_UVLO_CALIBRATION_CNT_THRESHOLD)
-		set_batt_cap(cm, cm->desc->cap);
+	WRITE_ONCE(cm->shutdown_flag, true);
+	/* Stop SOC writers before the final retained-register transaction. */
+	cancel_delayed_work_sync(&cm_monitor_work);
+	cancel_delayed_work_sync(&cm->fullbatt_vchk_work);
+	cancel_delayed_work_sync(&cm->cap_update_work);
+	/* UVLO may have called kernel_power_off() from this very work item. */
+	cancel_delayed_work(&cm->uvlo_work);
+	if (cm->desc->uvlo_trigger_cnt < CM_UVLO_CALIBRATION_CNT_THRESHOLD &&
+	    set_batt_cap(cm, cm->desc->cap))
+		dev_err(cm->dev, "Shutdown SOC save failed\n");
 
 	if (cm->fchg_info->ops && cm->fchg_info->ops->shutdown)
 		cm->fchg_info->ops->shutdown(cm->fchg_info);
@@ -8815,10 +8721,6 @@ static void charger_manager_shutdown(struct platform_device *pdev)
 	if (cm->vchg_info->ops && cm->vchg_info->ops->shutdown)
 		cm->vchg_info->ops->shutdown(cm->vchg_info);
 
-	cancel_delayed_work_sync(&cm_monitor_work);
-	cancel_delayed_work_sync(&cm->fullbatt_vchk_work);
-	cancel_delayed_work_sync(&cm->cap_update_work);
-	cancel_delayed_work(&cm->uvlo_work);
 }
 
 static const struct platform_device_id charger_manager_id[] = {
