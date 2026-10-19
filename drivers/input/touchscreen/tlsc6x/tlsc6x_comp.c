@@ -26,7 +26,7 @@
 #include <linux/input/mt.h>
 #include <linux/of_device.h>
 #include <linux/of_address.h>
-#include <linux/of_gpio.h>
+#include <linux/soc/sprd/unisoc_gpio_compat.h>
 #include <linux/interrupt.h>
 #include <linux/sched.h>
 #include <linux/kthread.h>
