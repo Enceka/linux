@@ -20,7 +20,7 @@
 #include <linux/sysfs.h>
 #include <linux/acpi.h>
 #include <linux/gpio.h>
-#include <linux/of_gpio.h>
+#include <linux/soc/sprd/unisoc_gpio_compat.h>
 #include <uapi/linux/usb/charger.h>
 
 /* timeout for resetting chip timer */
@@ -1594,8 +1594,7 @@ static int aw32257_power_supply_init(struct aw32257_device *bq,
 
 	ret = aw32257_detect_revision(bq);
 	if (ret < 0) {
-		strncpy(revstr, "unknown", sizeof(revstr)-1);
-		revstr[sizeof(revstr)-1] = '\0';
+		strscpy(revstr, "unknown", sizeof(revstr));
 	} else {
 		sprintf(revstr, "1.%d", ret);
 	}
