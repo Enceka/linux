@@ -224,7 +224,7 @@ static int sprd_gpu_start(struct panfrost_device *pfdev,
 
 	ret = sprd_gpu_top_state_wait(sprd);
 	if (ret) {
-		dev_err(pfdev->dev, "GPU did not report itself powered up (%d)\n",
+		dev_err(pfdev->base.dev, "GPU did not report itself powered up (%d)\n",
 			ret);
 		goto err_power;
 	}
