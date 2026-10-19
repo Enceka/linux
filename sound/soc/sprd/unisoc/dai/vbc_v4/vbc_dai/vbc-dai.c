@@ -3633,8 +3633,8 @@ int vbc_profile_loading(struct snd_soc_component *codec, int profile_id)
 	//strcpy(vbc_codec->firmware_path, AUDIO_FIRMWARE_PATH_BASE);
 	//strcat(vbc_codec->firmware_path, vbc_get_profile_name(profile_id));
 	//ret = audio_load_firmware_data(&fw, &vbc_codec->firmware_path[0]);
-	strncpy(vbc_codec->firmware_path, vbc_get_profile_name(profile_id),
-		AUD_FIRMWARE_PATHNAME_LEN_MAX - 1);
+	strscpy(vbc_codec->firmware_path, vbc_get_profile_name(profile_id),
+		sizeof(vbc_codec->firmware_path));
 	ret = request_firmware(&fw, &vbc_codec->firmware_path[0], codec->dev);
 	if (ret) {
 		pr_err("%s load firmware %s fail %d\n", __func__,
