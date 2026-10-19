@@ -29,7 +29,7 @@
 #include <linux/firmware.h>
 #include "marlin_platform.h"
 #include "wcn_bus.h"
-#include <linux/of_gpio.h>
+#include <linux/soc/sprd/unisoc_gpio_compat.h>
 
 #define SYSTEM_WIFI_CONFIG_FILE "wifi_board_config.ini"
 #define SYSTEM_WIFI_CONFIG_FILE_LATTE_CD "wifi_board_config_latte_CD.ini"

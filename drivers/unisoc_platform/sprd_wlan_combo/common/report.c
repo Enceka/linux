@@ -79,7 +79,7 @@ void sprd_report_softap(struct sprd_vif *vif, u8 is_connect, u8 *addr,
 			netif_carrier_on(vif->ndev);
 			netif_wake_queue(vif->ndev);
 		}
-		cfg80211_new_sta(vif->ndev, addr, &sinfo, GFP_KERNEL);
+		cfg80211_new_sta(&vif->wdev, addr, &sinfo, GFP_KERNEL);
 #ifdef CONFIG_SPRD_WLAN_DEBUG
 		netdev_info(vif->ndev, "New station (%pM) connected\n", addr);
 #else
@@ -87,7 +87,7 @@ void sprd_report_softap(struct sprd_vif *vif, u8 is_connect, u8 *addr,
 			    addr[0], addr[1], addr[2], addr[3]);
 #endif
 	} else {
-		cfg80211_del_sta(vif->ndev, addr, GFP_KERNEL);
+		cfg80211_del_sta(&vif->wdev, addr, GFP_KERNEL);
 #ifdef CONFIG_SPRD_WLAN_DEBUG
 		netdev_info(vif->ndev, "The station (%pM) disconnected\n", addr);
 #else

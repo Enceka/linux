@@ -9,7 +9,7 @@
 #include "wcn_bus.h"
 #include <linux/miscdevice.h>
 #include <net/ip.h>
-#include <linux/of_gpio.h>
+#include <linux/soc/sprd/unisoc_gpio_compat.h>
 #include <linux/of_address.h>
 #include <linux/of_device.h>
 #include <linux/proc_fs.h>

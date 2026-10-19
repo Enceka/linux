@@ -18,7 +18,7 @@
 #include <linux/vmalloc.h>
 #include "marlin_platform.h"
 #include "wcn_bus.h"
-#include <linux/of_gpio.h>
+#include <linux/soc/sprd/unisoc_gpio_compat.h>
 
 #include "common/common.h"
 #include "hw_param.h"

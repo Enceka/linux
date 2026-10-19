@@ -8,7 +8,7 @@
 #include "cmdevt.h"
 #include <linux/of.h>
 #include <linux/init.h>
-#include <linux/of_gpio.h>
+#include <linux/soc/sprd/unisoc_gpio_compat.h>
 
 static struct sprd_fcc_priv fcc_info;
 

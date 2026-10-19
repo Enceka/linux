@@ -495,15 +495,16 @@ int sprd_cfg80211_change_iface(struct wiphy *wiphy, struct net_device *ndev,
 }
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0))
-int sprd_cfg80211_add_key(struct wiphy *wiphy, struct net_device *ndev,
+int sprd_cfg80211_add_key(struct wiphy *wiphy, struct wireless_dev *wdev,
 			  int link_id, u8 key_index, bool pairwise, const u8 *mac_addr,
 			  struct key_params *params)
 #else
-int sprd_cfg80211_add_key(struct wiphy *wiphy, struct net_device *ndev,
+int sprd_cfg80211_add_key(struct wiphy *wiphy, struct wireless_dev *wdev,
 			  u8 key_index, bool pairwise, const u8 *mac_addr,
 			  struct key_params *params)
 #endif
 {
+	struct net_device *ndev = wdev->netdev;
 	struct sprd_vif *vif = netdev_priv(ndev);
 
 	netdev_info(ndev, "%s key_index=%d, pairwise=%d, key_len=%d\n",
@@ -525,13 +526,14 @@ int sprd_cfg80211_add_key(struct wiphy *wiphy, struct net_device *ndev,
 }
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0))
-int sprd_cfg80211_del_key(struct wiphy *wiphy, struct net_device *ndev,
+int sprd_cfg80211_del_key(struct wiphy *wiphy, struct wireless_dev *wdev,
 			 int link_id, u8 key_index, bool pairwise, const u8 *mac_addr)
 #else
-int sprd_cfg80211_del_key(struct wiphy *wiphy, struct net_device *ndev,
+int sprd_cfg80211_del_key(struct wiphy *wiphy, struct wireless_dev *wdev,
 			  u8 key_index, bool pairwise, const u8 *mac_addr)
 #endif
 {
+	struct net_device *ndev = wdev->netdev;
 	struct sprd_vif *vif = netdev_priv(ndev);
 
 	netdev_info(ndev, "%s key_index=%d, pairwise=%d\n",
@@ -577,10 +579,10 @@ int sprd_cfg80211_set_default_key(struct wiphy *wiphy, struct net_device *ndev,
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0))
 int sprd_cfg80211_set_default_mgmt_key(struct wiphy *wiphy,
-				       struct net_device *netdev, int link_id, u8 key_index)
+				       struct wireless_dev *wdev, int link_id, u8 key_index)
 #else
 int sprd_cfg80211_set_default_mgmt_key(struct wiphy *wiphy,
-				       struct net_device *netdev, u8 key_index)
+				       struct wireless_dev *wdev, u8 key_index)
 #endif
 {
 	return 0;
@@ -653,7 +655,7 @@ int sprd_cfg80211_start_ap(struct wiphy *wiphy, struct net_device *ndev,
 		return -EINVAL;
 	}
 
-	strncpy(vif->ssid, settings->ssid, settings->ssid_len);
+	memcpy(vif->ssid, settings->ssid, settings->ssid_len);
 	vif->ssid_len = settings->ssid_len;
 	sprd_cfg80211_set_beacon_ies(vif, beacon);
 
@@ -682,7 +684,7 @@ int sprd_cfg80211_start_ap(struct wiphy *wiphy, struct net_device *ndev,
 	*(data + index) = (u8)(settings->ssid_len + 1);
 	index += 1;
 	/* copy ssid */
-	strncpy(data + index, settings->ssid, settings->ssid_len);
+	memcpy(data + index, settings->ssid, settings->ssid_len);
 	index += settings->ssid_len;
 	/* set hidden ssid flag */
 	*(data + index) = (u8)settings->hidden_ssid;
@@ -795,7 +797,7 @@ int sprd_cfg80211_stop_ap(struct wiphy *wiphy, struct net_device *ndev)
 	return ret;
 }
 
-int sprd_cfg80211_add_station(struct wiphy *wiphy, struct net_device *ndev,
+int sprd_cfg80211_add_station(struct wiphy *wiphy, struct wireless_dev *wdev,
 			      const u8 *mac, struct station_parameters *params)
 {
 	return 0;
@@ -823,9 +825,10 @@ int sprd_p2p_go_del_station(struct sprd_priv *priv, struct sprd_vif *vif,
 	return 0;
 }
 
-int sprd_cfg80211_del_station(struct wiphy *wiphy, struct net_device *ndev,
+int sprd_cfg80211_del_station(struct wiphy *wiphy, struct wireless_dev *wdev,
 			      struct station_del_parameters *params)
 {
+	struct net_device *ndev = wdev->netdev;
 	struct sprd_vif *vif = netdev_priv(ndev);
 
 	if (!params->mac) {
@@ -849,7 +852,7 @@ out:
 	return 0;
 }
 
-int sprd_cfg80211_change_station(struct wiphy *wiphy, struct net_device *ndev,
+int sprd_cfg80211_change_station(struct wiphy *wiphy, struct wireless_dev *wdev,
 				 const u8 *mac, struct station_parameters *params)
 {
 	return 0;
@@ -871,9 +874,10 @@ static bool sprd_ap_peer(struct sprd_vif *vif, const u8 *mac)
 	return false;
 }
 
-static int sprd_cfg80211_dump_station(struct wiphy *wiphy, struct net_device *ndev,
+static int sprd_cfg80211_dump_station(struct wiphy *wiphy, struct wireless_dev *wdev,
 				     int idx, u8 *mac, struct station_info *sinfo)
 {
+	struct net_device *ndev = wdev->netdev;
 	struct sprd_vif *vif = netdev_priv(ndev);
 	struct sprd_hif *hif = &vif->priv->hif;
 	u8 peer[ETH_ALEN];
@@ -907,9 +911,10 @@ static int sprd_cfg80211_get_channel(struct wiphy *wiphy, struct wireless_dev *w
 	return 0;
 }
 
-int sprd_cfg80211_get_station(struct wiphy *wiphy, struct net_device *ndev,
+int sprd_cfg80211_get_station(struct wiphy *wiphy, struct wireless_dev *wdev,
 			      const u8 *mac, struct station_info *sinfo)
 {
+	struct net_device *ndev = wdev->netdev;
 	struct sprd_vif *vif = netdev_priv(ndev);
 	struct sprd_sta_info sta = { 0 };
 	struct sprd_rate_info *tx_rate = NULL;
@@ -1293,7 +1298,7 @@ int sprd_cfg80211_connect(struct wiphy *wiphy, struct net_device *ndev,
 	if (!sme->ssid) {
 		netdev_dbg(ndev, "No SSID specified!\n");
 	} else {
-		strncpy(con.ssid, sme->ssid, sme->ssid_len);
+		memcpy(con.ssid, sme->ssid, sme->ssid_len);
 		con.ssid_len = sme->ssid_len;
 		vif->sm_state = SPRD_CONNECTING;
 
@@ -1302,7 +1307,7 @@ int sprd_cfg80211_connect(struct wiphy *wiphy, struct net_device *ndev,
 		ret = sprd_connect(vif->priv, vif, &con);
 		if (ret)
 			goto err;
-		strncpy(vif->ssid, sme->ssid, sme->ssid_len);
+		memcpy(vif->ssid, sme->ssid, sme->ssid_len);
 		vif->ssid_len = sme->ssid_len;
 		netdev_info(ndev, "%s %pM old_state %d connected(%u) "
                     "UTC %04d-%02d-%02d_%02d:%02d:%02d.%09ld (%d mins).\n",
@@ -1380,7 +1385,8 @@ int sprd_cfg80211_flush_pmksa(struct wiphy *wiphy, struct net_device *ndev)
 int sprd_cfg80211_remain_on_channel(struct wiphy *wiphy,
 				    struct wireless_dev *wdev,
 				    struct ieee80211_channel *chan,
-				    unsigned int duration, u64 *cookie)
+				    unsigned int duration, u64 *cookie,
+				    const u8 *rx_addr)
 {
 	struct sprd_vif *vif = container_of(wdev, struct sprd_vif, wdev);
 	enum nl80211_channel_type channel_type = 0;

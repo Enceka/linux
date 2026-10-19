@@ -388,8 +388,7 @@ int sc2355_scan(struct wiphy *wiphy, struct cfg80211_scan_request *request)
 			if (!ssids[i].ssid_len || ssids[i].ssid_len > IEEE80211_MAX_SSID_LEN)
 				continue;
 			scan_ssids->len = ssids[i].ssid_len;
-			strncpy(scan_ssids->ssid, ssids[i].ssid,
-				ssids[i].ssid_len);
+			memcpy(scan_ssids->ssid, ssids[i].ssid, ssids[i].ssid_len);
 			ssids_len += (ssids[i].ssid_len
 				      + sizeof(scan_ssids->len));
 			scan_ssids = (struct sprd_scan_ssid *)
