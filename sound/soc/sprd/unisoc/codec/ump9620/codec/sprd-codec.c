@@ -756,7 +756,7 @@ static int sprd_pga_get(struct snd_kcontrol *kcontrol,
 			struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_dapm_context *dapm =
-		 snd_soc_dapm_kcontrol_dapm(kcontrol);
+		 snd_soc_dapm_kcontrol_to_dapm(kcontrol);
 	struct snd_soc_component *codec = snd_soc_dapm_to_component(dapm);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -774,7 +774,7 @@ static int sprd_pga_put(struct snd_kcontrol *kcontrol,
 			struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_dapm_context *dapm =
-		 snd_soc_dapm_kcontrol_dapm(kcontrol);
+		 snd_soc_dapm_kcontrol_to_dapm(kcontrol);
 	struct snd_soc_component *codec = snd_soc_dapm_to_component(dapm);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -795,7 +795,7 @@ static int sprd_codec_spk_pga_get(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_dapm_context *dapm =
-		 snd_soc_dapm_kcontrol_dapm(kcontrol);
+		 snd_soc_dapm_kcontrol_to_dapm(kcontrol);
 	struct snd_soc_component *codec = snd_soc_dapm_to_component(dapm);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
@@ -807,7 +807,7 @@ static int sprd_codec_spk_pga_put(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_dapm_context *dapm =
-		 snd_soc_dapm_kcontrol_dapm(kcontrol);
+		 snd_soc_dapm_kcontrol_to_dapm(kcontrol);
 	struct snd_soc_component *codec = snd_soc_dapm_to_component(dapm);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
@@ -822,7 +822,7 @@ static int sprd_mixer_get(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_dapm_context *dapm =
-		 snd_soc_dapm_kcontrol_dapm(kcontrol);
+		 snd_soc_dapm_kcontrol_to_dapm(kcontrol);
 	struct snd_soc_component *codec = snd_soc_dapm_to_component(dapm);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -843,7 +843,7 @@ static int sprd_mixer_put(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_dapm_context *dapm =
-		 snd_soc_dapm_kcontrol_dapm(kcontrol);
+		 snd_soc_dapm_kcontrol_to_dapm(kcontrol);
 	struct snd_soc_component *codec = snd_soc_dapm_to_component(dapm);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -2649,9 +2649,8 @@ static void hp_dpop_dvld_check(struct snd_soc_component *codec, bool on_off,
 	char type_str[sizeof("HP_LR_TYPE") + 1] = "";
 	int i = 0, state;
 
-	strncpy(type_str, hp_chn_type_txt[sprd_codec->hp_chn_type],
-		sizeof("HP_LR_TYPE"));
-	type_str[sizeof("HP_LR_TYPE")] = '\0';
+	strscpy(type_str, hp_chn_type_txt[sprd_codec->hp_chn_type],
+		sizeof(type_str));
 
 	while (i++ < 20) {
 		state = snd_soc_component_read(codec, SOC_REG(ANA_STS1));

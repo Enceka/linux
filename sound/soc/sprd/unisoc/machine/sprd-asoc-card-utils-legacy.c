@@ -13,7 +13,6 @@
 #include <linux/platform_device.h>
 #include <linux/of.h>
 #include <linux/gpio.h>
-#include <linux/of_gpio.h>
 #include "sprd-asoc-card-utils.h"
 #include "sprd-asoc-card-utils-legacy.h"
 #include "sprd-asoc-common.h"
@@ -156,7 +155,7 @@ static int board_headphone_event(struct snd_soc_dapm_widget *w,
 	int on = !!SND_SOC_DAPM_EVENT_ON(event);
 
 	sp_asoc_pr_dbg("Headphone Switch %s\n", STR_ON_OFF(on));
-	board_ext_enable(w->dapm->card, on, BOARD_FUNC_HP);
+	board_ext_enable(snd_soc_dapm_to_card(w->dapm), on, BOARD_FUNC_HP);
 
 	return 0;
 }
@@ -168,7 +167,7 @@ static int board_earpiece_event(struct snd_soc_dapm_widget *w,
 
 	sp_asoc_pr_dbg("Earpiece Switch %s\n", STR_ON_OFF(on));
 	board.m[BOARD_FUNC_EAR].is_on = on;
-	board_ext_enable(w->dapm->card, on, BOARD_FUNC_EAR);
+	board_ext_enable(snd_soc_dapm_to_card(w->dapm), on, BOARD_FUNC_EAR);
 
 	return 0;
 }
@@ -180,7 +179,7 @@ static int board_speaker_event(struct snd_soc_dapm_widget *w,
 
 	sp_asoc_pr_dbg("Speaker Switch %s\n", STR_ON_OFF(on));
 	board.m[BOARD_FUNC_SPK].is_on = on;
-	board_ext_enable(w->dapm->card, on, BOARD_FUNC_SPK);
+	board_ext_enable(snd_soc_dapm_to_card(w->dapm), on, BOARD_FUNC_SPK);
 
 	return 0;
 }
@@ -192,7 +191,7 @@ static int board_speaker1_event(struct snd_soc_dapm_widget *w,
 
 	sp_asoc_pr_dbg("Speaker2 Switch %s\n", STR_ON_OFF(on));
 	board.m[BOARD_FUNC_SPK1].is_on = on;
-	board_ext_enable(w->dapm->card, on, BOARD_FUNC_SPK1);
+	board_ext_enable(snd_soc_dapm_to_card(w->dapm), on, BOARD_FUNC_SPK1);
 
 	return 0;
 }

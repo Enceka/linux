@@ -157,7 +157,7 @@ static int sprd_add_hwdep_dev(struct snd_soc_card *card)
 		return rc;
 	}
 
-	strncpy(hwdep->name, "SPRD_HWDEP", sizeof(hwdep->name));
+	strscpy(hwdep->name, "SPRD_HWDEP", sizeof(hwdep->name));
 	hwdep->iface = SNDRV_HWDEP_IFACE_FW_DICE;
 	hwdep->private_data = NULL;
 	hwdep->exclusive = true;

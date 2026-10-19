@@ -22,7 +22,6 @@
 #include <linux/notifier.h>
 #ifdef CONFIG_OF
 #include <linux/of_device.h>
-#include <linux/of_gpio.h>
 #endif
 #include <linux/regulator/consumer.h>
 #include <linux/sched.h>

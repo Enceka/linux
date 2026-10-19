@@ -15,7 +15,7 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/i2c.h>
-#include <linux/of_gpio.h>
+#include <linux/soc/sprd/unisoc_gpio_compat.h>
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/firmware.h>
