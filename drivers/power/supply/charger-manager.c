@@ -28,6 +28,7 @@
 #include <linux/reboot.h>
 #include <linux/rtc.h>
 #include <linux/slab.h>
+#include <linux/string.h>
 #include <linux/sysfs.h>
 #include <linux/thermal.h>
 #include <linux/usb/sprd_pd.h>

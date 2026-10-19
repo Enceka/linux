@@ -6319,7 +6319,7 @@ static int vbc_codec_soc_probe(struct snd_soc_component *codec)
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct vbc_profile *vbc_profile_setting =
 		&vbc_codec->vbc_profile_setting;
-	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(codec);
+	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(codec);
 
 	sp_asoc_pr_dbg("%s\n", __func__);
 
@@ -6701,7 +6701,7 @@ static int sprd_dai_vbc_probe(struct snd_soc_dai *dai)
 		intercon.sink = dai->driver->playback.stream_name;
 		pr_info("Add route for playback: Src = %s, Sink = %s\n",
 				intercon.source, intercon.sink);
-		snd_soc_dapm_add_routes(&dai->component->dapm, &intercon, 1);
+		snd_soc_dapm_add_routes(dai->component->dapm, &intercon, 1);
 	}
 	if (dai->driver->capture.stream_name &&
 	    be_dai_id_aif_name_capture[dai->driver->id]) {
@@ -6711,7 +6711,7 @@ static int sprd_dai_vbc_probe(struct snd_soc_dai *dai)
 		intercon.source = dai->driver->capture.stream_name;
 		pr_info("Add route for capture:  Src = %s, Sink = %s\n",
 				intercon.source, intercon.sink);
-		snd_soc_dapm_add_routes(&dai->component->dapm, &intercon, 1);
+		snd_soc_dapm_add_routes(dai->component->dapm, &intercon, 1);
 	}
 
 	return 0;
@@ -8148,7 +8148,7 @@ static void vbc_normal_route_en(struct snd_soc_dai *dai, bool on)
 {
 	struct vbc_codec_priv *vbc_codec = dev_get_drvdata(dai->dev);
 	struct snd_soc_component *codec = vbc_codec->codec;
-	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(codec);
+	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(codec);
 
 	pr_info("%s, on = %d\n", __func__, on);
 

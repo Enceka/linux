@@ -175,9 +175,9 @@ static int vbc_rxpx_codec_sc27xx_late_probe(struct snd_soc_card *card)
 {
 	sprd_asoc_board_comm_late_probe(card);
 
-	snd_soc_dapm_ignore_suspend(&card->dapm, "inter HP PA");
-	snd_soc_dapm_ignore_suspend(&card->dapm, "inter Spk PA");
-	snd_soc_dapm_ignore_suspend(&card->dapm, "inter Ear PA");
+	snd_soc_dapm_ignore_suspend(card->dapm, "inter HP PA");
+	snd_soc_dapm_ignore_suspend(card->dapm, "inter Spk PA");
+	snd_soc_dapm_ignore_suspend(card->dapm, "inter Ear PA");
 
 #if (defined(CONFIG_SND_HWDEP))
 	sprd_add_hwdep_dev(card);

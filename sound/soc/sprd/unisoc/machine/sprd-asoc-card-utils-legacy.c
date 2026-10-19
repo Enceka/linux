@@ -335,7 +335,7 @@ static int board_func_set(struct snd_kcontrol *kcontrol,
 		return 0;
 
 	board.func_switch[id] = ucontrol->value.integer.value[0];
-	board_ext_pin_control(&card->dapm, id, id + 1);
+	board_ext_pin_control(card->dapm, id, id + 1);
 
 	return 1;
 }
@@ -367,7 +367,7 @@ static int board_mute_set(struct snd_kcontrol *kcontrol,
 		return 0;
 
 	board.m[id].need_mute = ucontrol->value.integer.value[0];
-	board_ext_pin_control(&card->dapm, id, id + 1);
+	board_ext_pin_control(card->dapm, id, id + 1);
 
 	return 1;
 }
@@ -558,10 +558,10 @@ int sprd_asoc_board_comm_late_probe(struct snd_soc_card *card)
 
 	sprd_audio_debug_init(card->snd_card);
 
-	board_ext_pin_control(&card->dapm, 0, BOARD_FUNC_MAX);
+	board_ext_pin_control(card->dapm, 0, BOARD_FUNC_MAX);
 
 	for (i = 0; i < BOARD_FUNC_MAX; i++)
-		snd_soc_dapm_ignore_suspend(&card->dapm, func_name[i]);
+		snd_soc_dapm_ignore_suspend(card->dapm, func_name[i]);
 
 	return 0;
 }
@@ -579,6 +579,6 @@ void sprd_asoc_shutdown(struct platform_device *pdev)
 		return;
 
 	memset(&board.func_switch, 0, sizeof(board.func_switch));
-	board_ext_pin_control(&card->dapm, 0, BOARD_FUNC_MAX);
+	board_ext_pin_control(card->dapm, 0, BOARD_FUNC_MAX);
 }
 EXPORT_SYMBOL(sprd_asoc_shutdown);

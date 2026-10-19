@@ -5442,7 +5442,7 @@ static int sprd_codec_soc_probe(struct snd_soc_component *codec)
 {
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	int ret;
-	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(codec);
+	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(codec);
 
 	if (!sprd_codec) {
 		pr_err("%s sprd_codec NULL error\n", __func__);
