@@ -200,7 +200,7 @@ static void sipa_nic_alarm_start(struct sipa_nic_cons_res *res)
 	add = ktime_set(SIPA_NIC_RM_INACTIVE_TIMER / MSEC_PER_SEC,
 			(SIPA_NIC_RM_INACTIVE_TIMER % MSEC_PER_SEC)
 			* NSEC_PER_SEC);
-	alarm_start(&res->delay_timer, ktime_add(now, add));
+	alarm_start_timer(&res->delay_timer, ktime_add(now, add), false);
 }
 
 static void sipa_nic_rm_notify_cb(void *user_data, enum sipa_rm_event event,
@@ -312,7 +312,7 @@ static void sipa_nic_alarm_to_release(struct alarm *alarm, ktime_t time)
 {
 	/* alarm_forward() has set the next expiry */
 	if (__sipa_nic_alarm_to_release(alarm, time) == ALARMTIMER_RESTART)
-		alarm_start(alarm, alarm->node.expires);
+		alarm_start_timer(alarm, alarm->node.expires, false);
 }
 #endif
 
