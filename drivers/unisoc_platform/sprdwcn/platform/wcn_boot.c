@@ -18,7 +18,7 @@
 #include <linux/module.h>
 #include <linux/of_address.h>
 #include <linux/of_device.h>
-#include <linux/of_gpio.h>
+#include <linux/soc/sprd/unisoc_gpio_compat.h>
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 #include <linux/regulator/consumer.h>
@@ -373,7 +373,7 @@ int marlin_tsx_cali_data_read(struct tsx_data *p_tsx_data)
 	/* copy tsx_firmware->data to buffer */
 	size = sizeof(struct tsx_data);
 	pdata = (char *)p_tsx_data;
-	strncpy(pdata, tsx_firmware->data, size);
+	strscpy_pad(pdata, tsx_firmware->data, size);
 
 	release_firmware(tsx_firmware);
 	pr_info("read tsx cali, pdata = %p, p_tsx_data->dac = %02x\n", pdata,

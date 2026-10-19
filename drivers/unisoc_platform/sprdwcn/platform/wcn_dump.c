@@ -465,10 +465,14 @@ static int wcn_fill_dump_head_info(struct wcn_dump_mem_reg *mem_cfg, size_t cnt)
 		return -1;
 	}
 
-	strncpy(head->version, WCN_DUMP_VERSION_NAME,
-		strlen(WCN_DUMP_VERSION_NAME));
-	strncpy(head->sub_version, WCN_DUMP_VERSION_SUB_NAME,
-		strlen(WCN_DUMP_VERSION_SUB_NAME));
+	/*
+	 * Both fields are fixed-size byte tags in a packed header, not strings:
+	 * copy the version tag whole and leave the rest of the (kzalloc'd) field zero.
+	 */
+	memcpy(head->version, WCN_DUMP_VERSION_NAME,
+	       sizeof(head->version));
+	memcpy(head->sub_version, WCN_DUMP_VERSION_SUB_NAME,
+	       strlen(WCN_DUMP_VERSION_SUB_NAME));
 	head->n_sec = cpu_to_le32(cnt);
 	len = head_len;
 	for (i = 0; i < cnt; i++) {

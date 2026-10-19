@@ -386,14 +386,14 @@ static int wcn_fill_dump_head_info(struct wcn_dump_mem_reg *mem_cfg, size_t cnt)
 		return -1;
 	}
 
-	strncpy(head->version, WCN_DUMP_VERSION_NAME,
-		strlen(WCN_DUMP_VERSION_NAME) + 1);
+	/* Fixed-size byte tag in a packed header, not a string. */
+	memcpy(head->version, WCN_DUMP_VERSION_NAME, sizeof(head->version));
 	if (wcn_platform_chip_type() == WCN_PLATFORM_TYPE_QOGIRL6) {
-		strncpy(head->sub_version, UMW2631_WCN_DUMP_VERSION_SUB_NAME,
-			strlen(UMW2631_WCN_DUMP_VERSION_SUB_NAME) + 1);
+		strscpy(head->sub_version, UMW2631_WCN_DUMP_VERSION_SUB_NAME,
+			sizeof(head->sub_version));
 	} else {
-		strncpy(head->sub_version, WCN_DUMP_VERSION_SUB_NAME,
-			strlen(WCN_DUMP_VERSION_SUB_NAME) + 1);
+		strscpy(head->sub_version, WCN_DUMP_VERSION_SUB_NAME,
+			sizeof(head->sub_version));
 	}
 
 	head->n_sec = cpu_to_le32(cnt);

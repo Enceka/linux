@@ -16,7 +16,7 @@
 #include <linux/mmc/sdio_func.h>
 #include <linux/module.h>
 #include <linux/of_device.h>
-#include <linux/of_gpio.h>
+#include <linux/soc/sprd/unisoc_gpio_compat.h>
 #include <linux/pm_runtime.h>
 #include <linux/soc/sprd/unisoc_compat.h>
 

@@ -342,8 +342,7 @@ static int wcn_get_firmware_path(char *firmwarename, char *firmware_path)
 		folder_path_length = strlen(firmware_path)
 				     - strlen(WCN_BTWF_FILENAME);
 		*(firmware_path + folder_path_length) = 0;
-		strncpy(gnss_firmware_parent_path, firmware_path,
-			sizeof(gnss_firmware_parent_path));
+		strscpy(gnss_firmware_parent_path, firmware_path, sizeof(gnss_firmware_parent_path));
 
 	} else {
 		return -EINVAL;
@@ -513,10 +512,9 @@ static int wcn_load_firmware_data(struct wcn_device *wcn_dev)
 	if (is_gnss) {
 		memset(wcn_dev->firmware_path, 0,
 		       sizeof(wcn_dev->firmware_path));
-		strncpy(wcn_dev->firmware_path, gnss_firmware_parent_path,
-			sizeof(wcn_dev->firmware_path));
+		strscpy(wcn_dev->firmware_path, gnss_firmware_parent_path, sizeof(wcn_dev->firmware_path));
 		strncat(wcn_dev->firmware_path, wcn_dev->firmware_path_ext,
-			FIRMWARE_FILEPATHNAME_LENGTH_MAX - 1);
+			sizeof(wcn_dev->firmware_path_ext));
 		WCN_INFO("gnss path=%s\n", wcn_dev->firmware_path);
 	}
 
@@ -550,23 +548,19 @@ static int wcn_download_image(struct wcn_device *wcn_dev)
 	memset(firmware_file_path, 0, FIRMWARE_FILEPATHNAME_LENGTH_MAX);
 	if (!is_marlin) {
 		if (wcn_platform_chip_type() == WCN_PLATFORM_TYPE_QOGIRL6) {
-			strncpy(firmware_file_name, WCN_GNSSMODEM_FILENAME,
-				sizeof(firmware_file_name));
+			strscpy(firmware_file_name, WCN_GNSSMODEM_FILENAME, sizeof(firmware_file_name));
 		} else {
 			if (s_wcn_device.gnss_type == WCN_GNSS_TYPE_GL)
-				strncpy(firmware_file_name, WCN_GNSS_FILENAME,
-					sizeof(firmware_file_name));
+				strscpy(firmware_file_name, WCN_GNSS_FILENAME, sizeof(firmware_file_name));
 			else if (s_wcn_device.gnss_type == WCN_GNSS_TYPE_BD)
-				strncpy(firmware_file_name, WCN_GNSS_BD_FILENAME,
-					sizeof(firmware_file_name));
+				strscpy(firmware_file_name, WCN_GNSS_BD_FILENAME, sizeof(firmware_file_name));
 			else
 				return -EINVAL;
 		}
 	}
 
 	if (is_marlin)
-		strncpy(firmware_file_name, WCN_BTWF_FILENAME,
-			sizeof(firmware_file_name));
+		strscpy(firmware_file_name, WCN_BTWF_FILENAME, sizeof(firmware_file_name));
 	strcat(firmware_file_name, ".bin");
 	if (!is_marlin) {
 		strcpy(firmware_file_path, gnss_firmware_path);
@@ -679,10 +673,10 @@ static void fstab_ab(struct wcn_device *wcn_dev)
 {
 	if (wcn_dev->fstab == 'a')
 		strncat(firmware_file_path, "_a",
-			FIRMWARE_FILEPATHNAME_LENGTH_MAX - 1);
+			sizeof(wcn_dev->firmware_path_ext));
 	else if (wcn_dev->fstab == 'b')
 		strncat(firmware_file_path, "_b",
-			FIRMWARE_FILEPATHNAME_LENGTH_MAX - 1);
+			sizeof(wcn_dev->firmware_path_ext));
 }
 
 int wcn_download_image_ufs(struct wcn_device *wcn_dev)
@@ -703,15 +697,13 @@ int wcn_download_image_ufs(struct wcn_device *wcn_dev)
 		s_wcn_device.gnss_type == WCN_GNSS_TYPE_BD) {
 		if (!(wcn_dev->file_path_ext_ufs))
 			return 1;
-		strncpy(firmware_file_path, wcn_dev->file_path_ext_ufs,
-			sizeof(firmware_file_path));
+		strscpy(firmware_file_path, wcn_dev->file_path_ext_ufs, sizeof(firmware_file_path));
 		gnss_file_path_set(firmware_file_path);
 		fstab_ab(wcn_dev);
 	} else {
 		if (!(wcn_dev->file_path_ufs))
 			return 1;
-		strncpy(firmware_file_path, wcn_dev->file_path_ufs,
-			sizeof(firmware_file_path));
+		strscpy(firmware_file_path, wcn_dev->file_path_ufs, sizeof(firmware_file_path));
 		fstab_ab(wcn_dev);
 	}
 
@@ -751,15 +743,13 @@ int wcn_download_image_emmc(struct wcn_device *wcn_dev)
 		s_wcn_device.gnss_type == WCN_GNSS_TYPE_BD) {
 		if (!(wcn_dev->file_path_ext))
 			return 1;
-		strncpy(firmware_file_path, wcn_dev->file_path_ext,
-				sizeof(firmware_file_path));
+		strscpy(firmware_file_path, wcn_dev->file_path_ext, sizeof(firmware_file_path));
 		fstab_ab(wcn_dev);
 		gnss_file_path_set(firmware_file_path);
 	} else {
 		if (!(wcn_dev->file_path))
 			return 1;
-		strncpy(firmware_file_path, wcn_dev->file_path,
-			sizeof(firmware_file_path));
+		strscpy(firmware_file_path, wcn_dev->file_path, sizeof(firmware_file_path));
 		fstab_ab(wcn_dev);
 	}
 
@@ -3498,21 +3488,21 @@ int start_integrate_wcn_truely(u32 subsys)
 	is_marlin = wcn_dev_is_marlin(wcn_dev);
 	if (!is_marlin) {
 		if (wcn_platform_chip_type() == WCN_PLATFORM_TYPE_QOGIRL6) {
-			strncpy(&wcn_dev->firmware_path_ext[0], WCN_GNSSMODEM_FILENAME,
-				FIRMWARE_FILEPATHNAME_LENGTH_MAX - 1);
+			strscpy(&wcn_dev->firmware_path_ext[0], WCN_GNSSMODEM_FILENAME,
+				sizeof(wcn_dev->firmware_path_ext));
 			WCN_INFO("wcn gnss modem path=%s\n",
 				&wcn_dev->firmware_path_ext[0]);
 
 		} else {
 			if (subsys_bit & WCN_GNSS_MASK) {
-				strncpy(&wcn_dev->firmware_path_ext[0], WCN_GNSS_FILENAME,
-					FIRMWARE_FILEPATHNAME_LENGTH_MAX - 1);
+				strscpy(&wcn_dev->firmware_path_ext[0], WCN_GNSS_FILENAME,
+					sizeof(wcn_dev->firmware_path_ext));
 				s_wcn_device.gnss_type = WCN_GNSS_TYPE_GL;
 				WCN_INFO("wcn gnss path=%s\n",
 					&wcn_dev->firmware_path_ext[0]);
 			} else {
-				strncpy(&wcn_dev->firmware_path_ext[0], WCN_GNSS_BD_FILENAME,
-					FIRMWARE_FILEPATHNAME_LENGTH_MAX - 1);
+				strscpy(&wcn_dev->firmware_path_ext[0], WCN_GNSS_BD_FILENAME,
+					sizeof(wcn_dev->firmware_path_ext));
 				s_wcn_device.gnss_type = WCN_GNSS_TYPE_BD;
 				WCN_INFO("wcn bd path=%s\n",
 					&wcn_dev->firmware_path_ext[0]);
