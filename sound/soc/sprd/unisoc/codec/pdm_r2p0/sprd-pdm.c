@@ -253,7 +253,7 @@ void pdm_module_en(struct sprd_pdm_priv *sprd_pdm, bool en)
 static int pdm_module_en_get(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_pdm_priv *sprd_pdm = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_pdm->module_en;
@@ -264,7 +264,7 @@ static int pdm_module_en_get(struct snd_kcontrol *kcontrol,
 static int pdm_module_en_set(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_pdm_priv *sprd_pdm = snd_soc_component_get_drvdata(codec);
 
 	sprd_pdm->module_en = ucontrol->value.integer.value[0];
@@ -277,7 +277,7 @@ static int pdm_module_en_set(struct snd_kcontrol *kcontrol,
 static int pdm_adc2_l_dg_get(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_pdm_priv *sprd_pdm = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_pdm->adc2_l_dg;
@@ -288,7 +288,7 @@ static int pdm_adc2_l_dg_get(struct snd_kcontrol *kcontrol,
 static int pdm_adc2_l_dg_set(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_pdm_priv *sprd_pdm = snd_soc_component_get_drvdata(codec);
 	int ret;
 
@@ -312,7 +312,7 @@ static int pdm_adc2_l_dg_set(struct snd_kcontrol *kcontrol,
 static int pdm_adc2_r_dg_get(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_pdm_priv *sprd_pdm = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_pdm->adc2_r_dg;
@@ -323,7 +323,7 @@ static int pdm_adc2_r_dg_get(struct snd_kcontrol *kcontrol,
 static int pdm_adc2_r_dg_set(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_pdm_priv *sprd_pdm = snd_soc_component_get_drvdata(codec);
 	int ret;
 

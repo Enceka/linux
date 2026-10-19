@@ -2232,7 +2232,7 @@ static struct snd_soc_component_driver sprd_platform_compr_drv = {
 	.name		= SPRD_DMAENGINE_COMPR_DRV_NAME,
 	.probe		= sprd_compr_probe,
 	.compress_ops	= &sprd_platform_compr_ops,
-	.pcm_construct    = sprd_compress_new,
+	.pcm_new    = sprd_compress_new,
 };
 
 static int sprd_platform_compr_probe(struct platform_device *pdev)

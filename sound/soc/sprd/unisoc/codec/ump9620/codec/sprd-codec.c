@@ -600,7 +600,7 @@ static void codec_digital_reg_restore(struct snd_soc_component *codec)
 static int dig_access_disable_put(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	bool disable = !!ucontrol->value.integer.value[0];
 
@@ -648,7 +648,7 @@ static int dig_access_disable_put(struct snd_kcontrol *kcontrol,
 static int dig_access_disable_get(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->user_dig_access_dis;
@@ -659,7 +659,7 @@ static int dig_access_disable_get(struct snd_kcontrol *kcontrol,
 static int dig_access_disable_check_put(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	bool check = !!ucontrol->value.integer.value[0];
 
@@ -683,7 +683,7 @@ static int dig_access_disable_check_put(struct snd_kcontrol *kcontrol,
 static int dig_access_disable_check_get(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->user_dig_access_dis_check;
@@ -3914,7 +3914,7 @@ static const struct snd_soc_dapm_route sprd_codec_intercon[] = {
 static int sprd_codec_info_get(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	sp_asoc_pr_info("chip_id 0x%x, ver_id 0x%x, hw_index %d\n",
@@ -3930,7 +3930,7 @@ static int sprd_codec_inter_pa_get(struct snd_kcontrol *kcontrol,
 {
 	struct soc_mixer_control *mc =
 	    (struct soc_mixer_control *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	int max = mc->max;
 	unsigned int invert = mc->invert;
@@ -3950,7 +3950,7 @@ static int sprd_codec_inter_pa_put(struct snd_kcontrol *kcontrol,
 {
 	struct soc_mixer_control *mc =
 	    (struct soc_mixer_control *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	int max = mc->max;
 	unsigned int mask = BIT(fls(max)) - 1;
@@ -3973,7 +3973,7 @@ static int sprd_codec_dac_lrclk_sel_get(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
 	unsigned int val;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	val = sprd_codec->lrclk_sel[LRCLK_SEL_DAC];
@@ -3989,7 +3989,7 @@ static int sprd_codec_dac_lrclk_sel_put(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
 	int ret;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
 	unsigned int val;
@@ -4021,7 +4021,7 @@ static int sprd_codec_adc_lrclk_sel_get(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
 	unsigned int val;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	val = sprd_codec->lrclk_sel[LRCLK_SEL_ADC];
@@ -4036,7 +4036,7 @@ static int sprd_codec_adc_lrclk_sel_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_adc_lrclk_sel_put(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
 	unsigned int val;
@@ -4070,7 +4070,7 @@ static int sprd_codec_adc1_lrclk_sel_get(struct snd_kcontrol *kcontrol,
 					 struct snd_ctl_elem_value *ucontrol)
 {
 	unsigned int val;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	val = sprd_codec->lrclk_sel[LRCLK_SEL_ADC1];
@@ -4085,7 +4085,7 @@ static int sprd_codec_adc1_lrclk_sel_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_adc1_lrclk_sel_put(struct snd_kcontrol *kcontrol,
 					 struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
 	unsigned int val;
@@ -4119,7 +4119,7 @@ static int sprd_codec_adc1_lrclk_sel_put(struct snd_kcontrol *kcontrol,
 static int sprd_codec_fixed_rate_get(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->fixed_sample_rate[0];
@@ -4130,7 +4130,7 @@ static int sprd_codec_fixed_rate_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_fixed_rate_put(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	int i;
 	u32 fixed_rate;
@@ -4147,7 +4147,7 @@ static int sprd_codec_fixed_rate_put(struct snd_kcontrol *kcontrol,
 static int sprd_codec_get_hp_mix_mode(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->hp_mix_mode;
@@ -4201,7 +4201,7 @@ static int sprd_codec_da_mode_switch(struct snd_soc_component *codec, bool on)
 static int sprd_codec_set_hp_mix_mode(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	sprd_codec->hp_mix_mode = ucontrol->value.integer.value[0];
@@ -4212,7 +4212,7 @@ static int sprd_codec_set_hp_mix_mode(struct snd_kcontrol *kcontrol,
 static int sprd_codec_spk_dg_fall_get(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->spk_fall_dg;
@@ -4223,7 +4223,7 @@ static int sprd_codec_spk_dg_fall_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_spk_dg_fall_set(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	sprd_codec->spk_fall_dg = ucontrol->value.integer.value[0];
@@ -4233,7 +4233,7 @@ static int sprd_codec_spk_dg_fall_set(struct snd_kcontrol *kcontrol,
 static int sprd_codec_das_input_mux_get(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.enumerated.item[0] = sprd_codec->das_input_mux;
@@ -4244,7 +4244,7 @@ static int sprd_codec_das_input_mux_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_das_input_mux_put(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
 
@@ -4265,7 +4265,7 @@ static int sprd_codec_das_input_mux_put(struct snd_kcontrol *kcontrol,
 static int sprd_codec_ivsence_dmic_get(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->ivsence_dmic_type;
@@ -4276,7 +4276,7 @@ static int sprd_codec_ivsence_dmic_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_ivsence_dmic_put(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	int val;
@@ -4296,7 +4296,7 @@ static int sprd_codec_ivsence_dmic_put(struct snd_kcontrol *kcontrol,
 static int sprd_codec_daldo_bypass_get(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->daldo_bypass;
@@ -4307,7 +4307,7 @@ static int sprd_codec_daldo_bypass_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_daldo_bypass_put(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	sprd_codec->daldo_bypass = !!ucontrol->value.integer.value[0];
@@ -4320,7 +4320,7 @@ static int sprd_codec_daldo_bypass_put(struct snd_kcontrol *kcontrol,
 static int sprd_hf_impd_cal_get(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->impd_en;
@@ -4331,7 +4331,7 @@ static int sprd_hf_impd_cal_get(struct snd_kcontrol *kcontrol,
 static int sprd_hf_impd_cal_put(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	bool en = !!ucontrol->value.integer.value[0];
@@ -4370,7 +4370,7 @@ static int sprd_delay_time_put(struct snd_kcontrol *kcontrol,
 static int sprd_codec_clk_26m_in_sel_get(struct snd_kcontrol *kcontrol,
 					 struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->clk_26m_in_sel;
@@ -4381,7 +4381,7 @@ static int sprd_codec_clk_26m_in_sel_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_clk_26m_in_sel_put(struct snd_kcontrol *kcontrol,
 					 struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
 
@@ -4402,7 +4402,7 @@ static int sprd_codec_clk_26m_in_sel_put(struct snd_kcontrol *kcontrol,
 static int sprd_codec_drv_soft_t_get(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->drv_soft_t;
@@ -4413,7 +4413,7 @@ static int sprd_codec_drv_soft_t_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_drv_soft_t_put(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -4433,7 +4433,7 @@ static int sprd_codec_drv_soft_t_put(struct snd_kcontrol *kcontrol,
 static int sprd_codec_daaol_buf_dccal_get(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->daaol_buf_dccal;
@@ -4444,7 +4444,7 @@ static int sprd_codec_daaol_buf_dccal_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_daaol_buf_dccal_put(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
 
@@ -4465,7 +4465,7 @@ static int sprd_codec_daaol_buf_dccal_put(struct snd_kcontrol *kcontrol,
 static int sprd_codec_daaor_buf_dccal_get(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->daaor_buf_dccal;
@@ -4476,7 +4476,7 @@ static int sprd_codec_daaor_buf_dccal_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_daaor_buf_dccal_put(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
 
@@ -4497,7 +4497,7 @@ static int sprd_codec_daaor_buf_dccal_put(struct snd_kcontrol *kcontrol,
 static int sprd_codec_dahp_os_inv_get(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->dahp_os_inv;
@@ -4508,7 +4508,7 @@ static int sprd_codec_dahp_os_inv_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_dahp_os_inv_put(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
 
@@ -4529,7 +4529,7 @@ static int sprd_codec_dahp_os_inv_put(struct snd_kcontrol *kcontrol,
 static int sprd_codec_dahp_os_d_get(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->dahp_os_d;
@@ -4540,7 +4540,7 @@ static int sprd_codec_dahp_os_d_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_dahp_os_d_put(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -4560,7 +4560,7 @@ static int sprd_codec_dahp_os_d_put(struct snd_kcontrol *kcontrol,
 static int sprd_codec_dahpl_buf_dccal_get(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->dahpl_buf_dccal;
@@ -4571,7 +4571,7 @@ static int sprd_codec_dahpl_buf_dccal_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_dahpl_buf_dccal_put(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
 
@@ -4592,7 +4592,7 @@ static int sprd_codec_dahpl_buf_dccal_put(struct snd_kcontrol *kcontrol,
 static int sprd_codec_dahpr_buf_dccal_get(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->dahpr_buf_dccal;
@@ -4603,7 +4603,7 @@ static int sprd_codec_dahpr_buf_dccal_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_dahpr_buf_dccal_put(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
 
@@ -4624,7 +4624,7 @@ static int sprd_codec_dahpr_buf_dccal_put(struct snd_kcontrol *kcontrol,
 static int sprd_codec_rcv_pop_ramp_get(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->rcv_pop_ramp;
@@ -4635,7 +4635,7 @@ static int sprd_codec_rcv_pop_ramp_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_rcv_pop_ramp_put(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -4655,7 +4655,7 @@ static int sprd_codec_rcv_pop_ramp_put(struct snd_kcontrol *kcontrol,
 static int sprd_codec_get_sdm_l(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->sdm_l;
@@ -4668,7 +4668,7 @@ static int sprd_codec_get_sdm_l(struct snd_kcontrol *kcontrol,
 static int sprd_codec_set_sdm_l(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	sprd_codec->sdm_l = ucontrol->value.integer.value[0];
@@ -4681,7 +4681,7 @@ static int sprd_codec_set_sdm_l(struct snd_kcontrol *kcontrol,
 static int sprd_codec_get_sdm_h(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->sdm_h;
@@ -4694,7 +4694,7 @@ static int sprd_codec_get_sdm_h(struct snd_kcontrol *kcontrol,
 static int sprd_codec_set_sdm_h(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	sprd_codec->sdm_h = ucontrol->value.integer.value[0];
@@ -4707,7 +4707,7 @@ static int sprd_codec_set_sdm_h(struct snd_kcontrol *kcontrol,
 static int sprd_codec_hp_chn_type_get(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->hp_chn_type;
@@ -4718,7 +4718,7 @@ static int sprd_codec_hp_chn_type_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_hp_chn_type_put(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
 
@@ -4739,7 +4739,7 @@ static int sprd_codec_hp_chn_type_put(struct snd_kcontrol *kcontrol,
 static int sprd_codec_add0_data_sel_get(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->add0_data_sel;
@@ -4750,7 +4750,7 @@ static int sprd_codec_add0_data_sel_get(struct snd_kcontrol *kcontrol,
 static int sprd_codec_add0_data_sel_put(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
 	u32 val;
@@ -4790,7 +4790,7 @@ static int sprd_codec_add0_data_sel_put(struct snd_kcontrol *kcontrol,
 static int bias_power_get(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->bias_en;
@@ -4801,7 +4801,7 @@ static int bias_power_get(struct snd_kcontrol *kcontrol,
 static int bias_power_put(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 	bool on_off;
 	int ret = 0;
@@ -4829,7 +4829,7 @@ static int bias_power_put(struct snd_kcontrol *kcontrol,
 static int sprd_codec_get_ana_chip_id(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct sprd_codec_priv *sprd_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = sprd_codec->ana_chip_ver_id;

@@ -655,7 +655,7 @@ static const char *vbc_mdg_id2name(int id)
 static int vbc_mdg_get(struct snd_kcontrol *kcontrol,
 		       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -670,7 +670,7 @@ static int vbc_mdg_get(struct snd_kcontrol *kcontrol,
 static int vbc_mdg_put(struct snd_kcontrol *kcontrol,
 		       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -720,7 +720,7 @@ static const char *vbc_src_id2name(int id)
 static int vbc_src_get(struct snd_kcontrol *kcontrol,
 		       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -735,7 +735,7 @@ static int vbc_src_get(struct snd_kcontrol *kcontrol,
 static int vbc_src_put(struct snd_kcontrol *kcontrol,
 		       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -796,7 +796,7 @@ static const char *vbc_dg_id2name(int id)
 static int vbc_dg_get(struct snd_kcontrol *kcontrol,
 		      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -811,7 +811,7 @@ static int vbc_dg_get(struct snd_kcontrol *kcontrol,
 static int vbc_dg_put(struct snd_kcontrol *kcontrol,
 		      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -861,7 +861,7 @@ static const char *vbc_smthdg_id2name(int id)
 static int vbc_smthdg_get(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -876,7 +876,7 @@ static int vbc_smthdg_get(struct snd_kcontrol *kcontrol,
 static int vbc_smthdg_put(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -899,7 +899,7 @@ static int vbc_smthdg_put(struct snd_kcontrol *kcontrol,
 static int vbc_smthdg_step_get(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -913,7 +913,7 @@ static int vbc_smthdg_step_get(struct snd_kcontrol *kcontrol,
 static int vbc_smthdg_step_put(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -953,7 +953,7 @@ static const char *vbc_mixerdg_id2name(int id)
 static int vbc_mixerdg_mainpath_get(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -970,7 +970,7 @@ static int vbc_mixerdg_mainpath_get(struct snd_kcontrol *kcontrol,
 static int vbc_mixerdg_mainpath_put(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -992,7 +992,7 @@ static int vbc_mixerdg_mainpath_put(struct snd_kcontrol *kcontrol,
 static int vbc_mixerdg_mixpath_get(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -1009,7 +1009,7 @@ static int vbc_mixerdg_mixpath_get(struct snd_kcontrol *kcontrol,
 static int vbc_mixerdg_mixpath_put(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
@@ -1031,7 +1031,7 @@ static int vbc_mixerdg_mixpath_put(struct snd_kcontrol *kcontrol,
 static int vbc_mixerdg_step_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->mixerdg_step;
@@ -1043,7 +1043,7 @@ static int vbc_mixerdg_step_put(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
 	int val;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	val = ucontrol->value.integer.value[0];
@@ -1099,7 +1099,7 @@ static const struct soc_enum vbc_mixer_enum[VBC_MIXER_MAX] = {
 static int vbc_get_mixer_ops(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1113,7 +1113,7 @@ static int vbc_put_mixer_ops(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1192,7 +1192,7 @@ static const char *vbc_mux_adc_source_id2name(int id)
 static int vbc_mux_adc_source_get(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1206,7 +1206,7 @@ static int vbc_mux_adc_source_put(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1263,7 +1263,7 @@ static const char *vbc_mux_dac_out_id2name(int id)
 static int vbc_mux_dac_out_get(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1277,7 +1277,7 @@ static int vbc_mux_dac_out_put(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1347,7 +1347,7 @@ static const struct soc_enum dmic_chn_sel_enum =
 static int vbc_dmic_chn_sel_get(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->dmic_chn_sel;
@@ -1359,7 +1359,7 @@ static int vbc_dmic_chn_sel_put(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	if (ucontrol->value.integer.value[0] >= texts->items) {
@@ -1395,7 +1395,7 @@ static const char *vbc_mux_adc_id2name(int id)
 static int vbc_mux_adc_get(struct snd_kcontrol *kcontrol,
 			   struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1409,7 +1409,7 @@ static int vbc_mux_adc_put(struct snd_kcontrol *kcontrol,
 			   struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1463,7 +1463,7 @@ static const char *vbc_mux_fm_id2name(int id)
 static int vbc_mux_fm_get(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1477,7 +1477,7 @@ static int vbc_mux_fm_put(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1536,7 +1536,7 @@ static const char *vbc_mux_st_id2name(int id)
 static int vbc_mux_st_get(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1550,7 +1550,7 @@ static int vbc_mux_st_put(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1605,7 +1605,7 @@ static const char *vbc_mux_loop_da0_id2name(int id)
 static int vbc_mux_loop_da0_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1619,7 +1619,7 @@ static int vbc_mux_loop_da0_put(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1672,7 +1672,7 @@ static const char *vbc_mux_loop_da1_id2name(int id)
 static int vbc_mux_loop_da1_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1686,7 +1686,7 @@ static int vbc_mux_loop_da1_put(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1740,7 +1740,7 @@ static const char *vbc_mux_loop_da0_da1_id2name(int id)
 static int vbc_mux_loop_da0_da1_get(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1755,7 +1755,7 @@ static int vbc_mux_loop_da0_da1_put(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1814,7 +1814,7 @@ static const char *vbc_mux_audrcd_id2name(int id)
 static int vbc_mux_audrcd_get(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1828,7 +1828,7 @@ static int vbc_mux_audrcd_put(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1882,7 +1882,7 @@ static const char *vbc_mux_tdm_audrcd23_id2name(int id)
 static int vbc_mux_tdm_audrcd23_get(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1896,7 +1896,7 @@ static int vbc_mux_tdm_audrcd23_put(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1952,7 +1952,7 @@ static const char *vbc_mux_ap01_dsp_id2name(int id)
 static int vbc_mux_ap01_dsp_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -1966,7 +1966,7 @@ static int vbc_mux_ap01_dsp_put(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2028,7 +2028,7 @@ static const char *vbc_mux_iis_tx_id2name(int id)
 static int vbc_mux_iis_tx_get(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2042,7 +2042,7 @@ static int vbc_mux_iis_tx_put(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2099,7 +2099,7 @@ static const char *vbc_mux_iis_rx_id2name(int id)
 static int vbc_mux_iis_rx_get(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2113,7 +2113,7 @@ static int vbc_mux_iis_rx_put(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2179,7 +2179,7 @@ static const char *vbc_mux_iis_port_id2name(int id)
 static int vbc_mux_iis_port_do_get(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2193,7 +2193,7 @@ static int vbc_mux_iis_port_do_put(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2253,7 +2253,7 @@ vbc_adder_enum[VBC_ADDER_MAX] = {
 static int vbc_adder_get(struct snd_kcontrol *kcontrol,
 			 struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2268,7 +2268,7 @@ static int vbc_adder_put(struct snd_kcontrol *kcontrol,
 			 struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2335,7 +2335,7 @@ vbc_datapath_enum[VBC_DP_EN_MAX] = {
 static int vbc_dp_en_get(struct snd_kcontrol *kcontrol,
 			 struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2350,7 +2350,7 @@ static int vbc_dp_en_put(struct snd_kcontrol *kcontrol,
 {
 	u16 value;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2401,7 +2401,7 @@ static int vbc_call_mute_put(struct snd_kcontrol *kcontrol,
 {
 	u16 value;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2428,7 +2428,7 @@ static const struct soc_enum vbc_fm_mute_enum =
 static int vbc_fm_mute_get(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->fm_mute.mute;
@@ -2441,7 +2441,7 @@ static int vbc_fm_mute_put(struct snd_kcontrol *kcontrol,
 {
 	u16 value;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2477,7 +2477,7 @@ static int vbc_fm_mute_put(struct snd_kcontrol *kcontrol,
 static int vbc_fm_mdg_stp_get(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->fm_mute_step.step;
@@ -2489,7 +2489,7 @@ static int vbc_fm_mdg_stp_put(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
 	int value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.integer.value[0];
@@ -2520,7 +2520,7 @@ static const struct soc_enum vbc_iis_tx_wd_enum[VBC_MUX_IIS_TX_ID_MAX] = {
 static int vbc_get_iis_tx_width_sel(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2535,7 +2535,7 @@ static int vbc_put_iis_tx_width_sel(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2570,7 +2570,7 @@ static const struct soc_enum vbc_iis_tx_lr_mod_enum[VBC_MUX_IIS_TX_ID_MAX] = {
 static int vbc_get_iis_tx_lr_mod_sel(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2585,7 +2585,7 @@ static int vbc_put_iis_tx_lr_mod_sel(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2615,7 +2615,7 @@ static const struct soc_enum vbc_iis_rx_wd_enum[VBC_MUX_IIS_RX_ID_MAX] = {
 static int vbc_get_iis_rx_width_sel(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2630,7 +2630,7 @@ static int vbc_put_iis_rx_width_sel(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2653,7 +2653,7 @@ static int vbc_put_iis_rx_width_sel(struct snd_kcontrol *kcontrol,
 static int dsp_aux_mic2_sel_get(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->aux_mic2_sel_enable;
@@ -2666,7 +2666,7 @@ static int dsp_aux_mic2_sel_put(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	if (ucontrol->value.integer.value[0] >= texts->items) {
@@ -2686,7 +2686,7 @@ static int dsp_aux_mic2_sel_put(struct snd_kcontrol *kcontrol,
 static int dsp_smartamp_iv_exchange_get(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] =
@@ -2700,7 +2700,7 @@ static int dsp_smartamp_iv_exchange_put(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	if (ucontrol->value.integer.value[0] >= texts->items) {
@@ -2720,7 +2720,7 @@ static int dsp_smartamp_iv_exchange_put(struct snd_kcontrol *kcontrol,
 static int dsp_dac0_lr_exchange_get(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] =
@@ -2734,7 +2734,7 @@ static int dsp_dac0_lr_exchange_put(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	if (ucontrol->value.integer.value[0] >= texts->items) {
@@ -2754,7 +2754,7 @@ static int dsp_dac0_lr_exchange_put(struct snd_kcontrol *kcontrol,
 static int vbc_custm_dev_change_get(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->cust_dev;
@@ -2769,7 +2769,7 @@ static int vbc_custm_dev_change_put(struct snd_kcontrol *kcontrol,
 	u32 value;
 	int ret;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	if (ucontrol->value.integer.value[0] >= texts->items) {
@@ -2792,7 +2792,7 @@ static int vbc_custm_dev_change_put(struct snd_kcontrol *kcontrol,
 static int vbc_system_dev_change_get(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->sys_dev;
@@ -2807,7 +2807,7 @@ static int vbc_system_dev_change_put(struct snd_kcontrol *kcontrol,
 	u32 value;
 	int ret;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	if (ucontrol->value.integer.value[0] >= texts->items) {
@@ -2832,7 +2832,7 @@ static int vbc_system_dev_change_put(struct snd_kcontrol *kcontrol,
 static int vbc_custm_vol_change_get(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->cust_vol;
@@ -2847,7 +2847,7 @@ static int vbc_custm_vol_change_put(struct snd_kcontrol *kcontrol,
 	u32 value;
 	int ret;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	if (ucontrol->value.integer.value[0] >= texts->items) {
@@ -2880,7 +2880,7 @@ static const struct soc_enum vbc_iis_rx_lr_mod_enum[VBC_MUX_IIS_RX_ID_MAX] = {
 static int vbc_get_iis_rx_lr_mod_sel(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2895,7 +2895,7 @@ static int vbc_put_iis_rx_lr_mod_sel(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2929,7 +2929,7 @@ static const struct soc_enum vbc_iis_mst_sel_enum[IIS_MST_SEL_ID_MAX] = {
 static int vbc_get_mst_sel_type(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2945,7 +2945,7 @@ static int vbc_put_mst_sel_type(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -2971,7 +2971,7 @@ vbc_iis_master_enum = SPRD_VBC_ENUM(SND_SOC_NOPM, 2, enable_disable_txt);
 static int vbc_get_iis_master_en(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->iis_master.enable;
@@ -2984,7 +2984,7 @@ static int vbc_put_iis_master_en(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	if (ucontrol->value.integer.value[0] >= texts->items) {
@@ -3007,7 +3007,7 @@ static const struct soc_enum vbc_iis_master_wd_width_enum =
 static int vbc_get_iis_master_width(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->iis_mst_width;
@@ -3020,7 +3020,7 @@ static int vbc_put_iis_master_width(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	if (ucontrol->value.integer.value[0] >= texts->items) {
@@ -3045,7 +3045,7 @@ static int vbc_put_iis_master_width(struct snd_kcontrol *kcontrol,
 static int vbc_mainmic_path_sel_val_get(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -3060,7 +3060,7 @@ static int vbc_mainmic_path_sel_val_put(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -3089,7 +3089,7 @@ ivsence_enum = SPRD_VBC_ENUM(SND_SOC_NOPM, 2, enable_disable_txt);
 static int vbc_get_ivsence_func(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->is_use_ivs_smtpa;
@@ -3102,7 +3102,7 @@ static int vbc_put_ivsence_func(struct snd_kcontrol *kcontrol,
 {
 	u32 enable;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	int iv_adc_id;
 
@@ -3700,7 +3700,7 @@ profile_out:
 static int vbc_profile_get(struct snd_kcontrol *kcontrol,
 			   struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct vbc_profile *p_profile_setting =
 		&vbc_codec->vbc_profile_setting;
@@ -3718,7 +3718,7 @@ static int vbc_profile_put(struct snd_kcontrol *kcontrol,
 			   struct snd_ctl_elem_value *ucontrol)
 {
 	u32 ret;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct vbc_profile *p_profile_setting = &vbc_codec->vbc_profile_setting;
 	struct soc_mixer_control *mc =
@@ -3755,7 +3755,7 @@ static int vbc_profile_put(struct snd_kcontrol *kcontrol,
 static int vbc_profile_load_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct vbc_profile *p_profile_setting = &vbc_codec->vbc_profile_setting;
 	struct soc_mixer_control *mc =
@@ -3772,7 +3772,7 @@ static int vbc_profile_load_put(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
 	int ret;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
 	int profile_idx = mc->reg - SND_VBC_PROFILE_START;
@@ -3791,7 +3791,7 @@ static int vbc_profile_load_put(struct snd_kcontrol *kcontrol,
 static int vbc_volume_get(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->volume;
@@ -3803,7 +3803,7 @@ static int vbc_volume_put(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
 	int value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.integer.value[0];
@@ -3818,7 +3818,7 @@ static int vbc_volume_put(struct snd_kcontrol *kcontrol,
 static int vbc_reg_get(struct snd_kcontrol *kcontrol,
 		       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->dsp_reg;
@@ -3833,7 +3833,7 @@ static int vbc_reg_put(struct snd_kcontrol *kcontrol,
 	u32 value;
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	reg = mc->reg;
@@ -3850,7 +3850,7 @@ static int vbc_reg_put(struct snd_kcontrol *kcontrol,
 static int vbc_get_aud_iis_clock(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->aud_iis0_master_setting;
@@ -3871,7 +3871,7 @@ static int vbc_put_aud_iis_clock(struct snd_kcontrol *kcontrol,
 	u32 value;
 	int ret;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	if (ucontrol->value.integer.value[0] >= texts->items) {
@@ -3908,7 +3908,7 @@ static int vbc_put_aud_iis_clock(struct snd_kcontrol *kcontrol,
 static int vbc_loopback_loop_mode_get(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->loopback.loop_mode;
@@ -3920,7 +3920,7 @@ static int vbc_loopback_loop_mode_put(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
 	int value = ucontrol->value.integer.value[0];
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	vbc_codec->loopback.loop_mode = value;
@@ -3932,7 +3932,7 @@ static int vbc_loopback_loop_mode_put(struct snd_kcontrol *kcontrol,
 static int vbc_loopback_type_get(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->loopback.loopback_type;
@@ -3945,7 +3945,7 @@ static int vbc_loopback_type_put(struct snd_kcontrol *kcontrol,
 {
 	int value;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	if (ucontrol->value.integer.value[0] >= texts->items) {
@@ -3965,7 +3965,7 @@ static int vbc_loopback_type_put(struct snd_kcontrol *kcontrol,
 static int vbc_loopback_voice_fmt_get(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->loopback.voice_fmt;
@@ -3977,7 +3977,7 @@ static int vbc_loopback_voice_fmt_put(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
 	int value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.integer.value[0];
@@ -3991,7 +3991,7 @@ static int vbc_loopback_voice_fmt_put(struct snd_kcontrol *kcontrol,
 static int vbc_loopback_amr_rate_get(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->loopback.amr_rate;
@@ -4003,7 +4003,7 @@ static int vbc_loopback_amr_rate_put(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
 	int value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.enumerated.item[0];
@@ -4017,7 +4017,7 @@ static int vbc_loopback_amr_rate_put(struct snd_kcontrol *kcontrol,
 static int vbc_call_mute_get(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -4030,7 +4030,7 @@ static int vbc_call_mute_get(struct snd_kcontrol *kcontrol,
 static int vbc_audio_voice_ai2_get(struct snd_kcontrol *kcontrol,
 		       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->audio_voice_ai2_value;
@@ -4044,7 +4044,7 @@ static int vbc_audio_voice_ai2_put(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	int ret;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.integer.value[0];
@@ -4062,7 +4062,7 @@ thrd_ivsmartpa_enum = SPRD_VBC_ENUM(SND_SOC_NOPM, 2, enable_disable_txt);
 static int vbc_get_ivsmartpa_func(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->thrd_iv_smartpa.thrd_enable;
@@ -4075,7 +4075,7 @@ static int vbc_put_ivsmartpa_func(struct snd_kcontrol *kcontrol,
 {
 	u32 thrd_ivsmartpa_enable;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	int thrd_ivsmartpa_adcid;
 	int ret;
@@ -4101,7 +4101,7 @@ static int vbc_put_ivsmartpa_func(struct snd_kcontrol *kcontrol,
 static int sys_iis_sel_get(struct snd_kcontrol *kcontrol,
 			   struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 id = e->reg;
@@ -4134,7 +4134,7 @@ static int sys_iis_sel_put(struct snd_kcontrol *kcontrol,
 	int ret;
 	struct pinctrl_state *state;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	char buf[128] = {0};
@@ -4173,7 +4173,7 @@ static int sys_iis_sel_put(struct snd_kcontrol *kcontrol,
 static int vbc_get_ag_iis_ext_sel(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 ag_iis_num = e->reg;
@@ -4189,7 +4189,7 @@ static int vbc_put_ag_iis_ext_sel(struct snd_kcontrol *kcontrol,
 {
 	u16 enable;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 ag_iis_num = e->reg;
@@ -4211,7 +4211,7 @@ static int vbc_put_ag_iis_ext_sel(struct snd_kcontrol *kcontrol,
 static int vbc_get_ag_iis_ext_sel_v1(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 ag_iis_num = e->reg;
@@ -4227,7 +4227,7 @@ static int vbc_put_ag_iis_ext_sel_v1(struct snd_kcontrol *kcontrol,
 {
 	u16 mode;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 ag_iis_num = e->reg;
@@ -4249,7 +4249,7 @@ static int vbc_put_ag_iis_ext_sel_v1(struct snd_kcontrol *kcontrol,
 static int vbc_get_ag_iis_ext_sel_v2(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 ag_iis_num = e->reg;
@@ -4265,7 +4265,7 @@ static int vbc_put_ag_iis_ext_sel_v2(struct snd_kcontrol *kcontrol,
 {
 	u16 mode;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	u32 ag_iis_num = e->reg;
@@ -4288,7 +4288,7 @@ static int vbc_get_agdsp_access(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
 	u16 enable;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	enable = ucontrol->value.enumerated.item[0];
@@ -4304,7 +4304,7 @@ static int vbc_put_agdsp_aud_access(struct snd_kcontrol *kcontrol,
 {
 	u16 enable;
 	int ret = true;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	enable = ucontrol->value.enumerated.item[0];
@@ -4344,7 +4344,7 @@ static int vbc_put_agdsp_a2dp_access(struct snd_kcontrol *kcontrol,
 {
 	u16 enable;
 	int ret = true;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	enable = ucontrol->value.enumerated.item[0];
@@ -4383,7 +4383,7 @@ int sbc_paras_get(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_bytes_ext *params = (void *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	int len;
 	int size;
@@ -4404,7 +4404,7 @@ int sbc_paras_put(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_bytes_ext *params = (void *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	int len;
 	int size;
@@ -4432,7 +4432,7 @@ int a2dp_offload_paras_get(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_bytes_ext *params = (void *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	int len;
 	int size;
@@ -4452,7 +4452,7 @@ int a2dp_offload_paras_put(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_bytes_ext *params = (void *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	int len;
 	int size;
@@ -4481,7 +4481,7 @@ int a2dp_offload_paras_put(struct snd_kcontrol *kcontrol,
 static int a2dp_offload_type_get(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->a2dp_offload_type;
@@ -4495,7 +4495,7 @@ static int a2dp_offload_type_put(struct snd_kcontrol *kcontrol,
 	u32 value;
 	int ret;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	if (ucontrol->value.integer.value[0] >= texts->items) {
@@ -4520,7 +4520,7 @@ static int a2dp_offload_type_put(struct snd_kcontrol *kcontrol,
 static int dsp_voice_volume_ul_enable_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->voice_volume_ul_set;
@@ -4534,7 +4534,7 @@ static int dsp_voice_volume_ul_enable_put(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	int ret;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.enumerated.item[0];
@@ -4550,7 +4550,7 @@ static int dsp_voice_volume_ul_enable_put(struct snd_kcontrol *kcontrol,
 static int dsp_voice_volume_dl_enable_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->voice_volume_dl_set;
@@ -4564,7 +4564,7 @@ static int dsp_voice_volume_dl_enable_put(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	int ret;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.enumerated.item[0];
@@ -4626,7 +4626,7 @@ static const char *vbc_dumppos2name(int pos)
 static int vbc_get_dump_pos(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->vbc_dump_position;
@@ -4638,7 +4638,7 @@ static int vbc_put_dump_pos(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	int val;
 
@@ -4659,7 +4659,7 @@ static int vbc_put_dump_pos(struct snd_kcontrol *kcontrol,
 static int vbc_get_dump_pos_cmd(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->vbc_dump_position_cmd;
@@ -4671,7 +4671,7 @@ static int vbc_put_dump_pos_cmd(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	int val = ucontrol->value.integer.value[0];
 
@@ -4701,7 +4701,7 @@ vbc_iis_inf_sys_sel_enum = SPRD_VBC_ENUM(SND_SOC_NOPM, 2,
 static int vbc_iis_inf_sys_sel_get(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->vbc_iis_inf_sys_sel;
@@ -4719,7 +4719,7 @@ static int vbc_iis_inf_sys_sel_put(struct snd_kcontrol *kcontrol,
 	int ret;
 	struct pinctrl_state *state;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	char buf[128] = {0};
 
@@ -4749,7 +4749,7 @@ static int vbc_iis_inf_sys_sel_put(struct snd_kcontrol *kcontrol,
 static int vbc_voice_capture_type_get(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->voice_capture_type;
@@ -4762,7 +4762,7 @@ static int vbc_voice_capture_type_put(struct snd_kcontrol *kcontrol,
 {
 	int value;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	if (ucontrol->value.integer.value[0] >= texts->items) {
@@ -4781,7 +4781,7 @@ static int vbc_voice_capture_type_put(struct snd_kcontrol *kcontrol,
 static int vbc_voice_pcm_play_mode_get(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->voice_pcm_play_mode;
@@ -4794,7 +4794,7 @@ static int vbc_voice_pcm_play_mode_put(struct snd_kcontrol *kcontrol,
 {
 	int value;
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	if (ucontrol->value.integer.value[0] >= texts->items) {
@@ -4821,7 +4821,7 @@ static const struct soc_enum
 static int vad_din_ad_sel_get(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->vad_din_ad_sel;
@@ -4833,7 +4833,7 @@ static int vad_din_ad_sel_put(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_enum *texts = (struct soc_enum *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	struct pinctrl_state *state;
 	char buf[128] = {0};
@@ -4867,7 +4867,7 @@ static int dsp_usb_mcdt_play_para_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_bytes_ext *params = (void *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	int len, size;
 
@@ -4886,7 +4886,7 @@ static int dsp_usb_mcdt_play_para_put(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_bytes_ext *params = (void *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	int type, sample, format, chan;
 	int len, size;
@@ -4919,7 +4919,7 @@ static int dsp_usb_mcdt_cap_para_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_bytes_ext *params = (void *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	int len, size;
 
@@ -4938,7 +4938,7 @@ static int dsp_usb_mcdt_cap_para_put(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_bytes_ext *params = (void *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	int type, sample, format, chan;
 	int len, size;
@@ -4970,7 +4970,7 @@ static int dsp_usb_mcdt_cap_para_put(struct snd_kcontrol *kcontrol,
 static int dsp_usb_mcdt_out_device_get(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->usb_mcdt_out_device;
@@ -4982,7 +4982,7 @@ static int dsp_usb_mcdt_out_device_put(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
 	u32 value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.integer.value[0];
@@ -4996,7 +4996,7 @@ static int dsp_usb_mcdt_out_device_put(struct snd_kcontrol *kcontrol,
 static int dsp_usb_mcdt_in_device_get(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->usb_mcdt_in_device;
@@ -5008,7 +5008,7 @@ static int dsp_usb_mcdt_in_device_put(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
 	u32 value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.integer.value[0];
@@ -5022,7 +5022,7 @@ static int dsp_usb_mcdt_in_device_put(struct snd_kcontrol *kcontrol,
 static int dsp_usb_mcdt_moudle_en_get(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->usb_mcdt_moudle_en;
@@ -5034,7 +5034,7 @@ static int dsp_usb_mcdt_moudle_en_put(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
 	u32 value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.integer.value[0];
@@ -5048,7 +5048,7 @@ static int dsp_usb_mcdt_moudle_en_put(struct snd_kcontrol *kcontrol,
 static int dsp_cur_out_device_get(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->cur_out_device;
@@ -5060,7 +5060,7 @@ static int dsp_cur_out_device_put(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
 	u32 value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.integer.value[0];
@@ -5074,7 +5074,7 @@ static int dsp_cur_out_device_put(struct snd_kcontrol *kcontrol,
 static int dsp_hp_3p_crosstalk_en_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->hp_3p_crosstalk_en;
@@ -5087,7 +5087,7 @@ static int dsp_hp_3p_crosstalk_en_put(struct snd_kcontrol *kcontrol,
 {
 	u32 enable;
 	int ret;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	enable = ucontrol->value.enumerated.item[0];
@@ -5119,7 +5119,7 @@ static int dsp_hp_3p_crosstalk_en_put(struct snd_kcontrol *kcontrol,
 static int dsp_hp_4p_crosstalk_en_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->hp_4p_crosstalk_en;
@@ -5132,7 +5132,7 @@ static int dsp_hp_4p_crosstalk_en_put(struct snd_kcontrol *kcontrol,
 {
 	u32 enable;
 	int ret;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	enable = ucontrol->value.enumerated.item[0];
@@ -5164,7 +5164,7 @@ static int dsp_hp_4p_crosstalk_en_put(struct snd_kcontrol *kcontrol,
 static int dsp_hp_3p_crosstalk_gain_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->hp_3p_crosstalk_gain.gain0;
@@ -5176,7 +5176,7 @@ static int dsp_hp_3p_crosstalk_gain_get(struct snd_kcontrol *kcontrol,
 static int dsp_hp_3p_crosstalk_gain_put(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	int val0, val1, ret;
 
@@ -5197,7 +5197,7 @@ static int dsp_hp_3p_crosstalk_gain_put(struct snd_kcontrol *kcontrol,
 static int dsp_hp_4p_crosstalk_gain_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->hp_4p_crosstalk_gain.gain0;
@@ -5209,7 +5209,7 @@ static int dsp_hp_4p_crosstalk_gain_get(struct snd_kcontrol *kcontrol,
 static int dsp_hp_4p_crosstalk_gain_put(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	int val0, val1, ret;
 
@@ -5230,7 +5230,7 @@ static int dsp_hp_4p_crosstalk_gain_put(struct snd_kcontrol *kcontrol,
 static int dsp_audio_zoom_st_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->audio_zoom_st;
@@ -5244,7 +5244,7 @@ static int dsp_audio_zoom_st_put(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	int ret;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.enumerated.item[0];
@@ -5260,7 +5260,7 @@ static int dsp_audio_zoom_st_put(struct snd_kcontrol *kcontrol,
 static int dsp_audio_zoom_ratio_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->audio_zoom_ratio;
@@ -5273,7 +5273,7 @@ static int dsp_audio_zoom_ratio_put(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
 	int ret, value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.integer.value[0];
@@ -5290,7 +5290,7 @@ static int dsp_audio_zoom_focus_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_bytes_ext *params = (void *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	int len, size;
 
@@ -5309,7 +5309,7 @@ static int dsp_audio_zoom_focus_put(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
 	struct soc_bytes_ext *params = (void *)kcontrol->private_value;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 	int type, x, y, width, height;
 	int len, size;
@@ -5342,7 +5342,7 @@ static int dsp_audio_zoom_focus_put(struct snd_kcontrol *kcontrol,
 static int dsp_audio_aec_enable_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->audio_aec_set;
@@ -5356,7 +5356,7 @@ static int dsp_audio_aec_enable_put(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	int ret;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.enumerated.item[0];
@@ -5372,7 +5372,7 @@ static int dsp_audio_aec_enable_put(struct snd_kcontrol *kcontrol,
 static int dsp_audio_ns_enable_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->audio_ns_set;
@@ -5386,7 +5386,7 @@ static int dsp_audio_ns_enable_put(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	int ret;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.enumerated.item[0];
@@ -5402,7 +5402,7 @@ static int dsp_audio_ns_enable_put(struct snd_kcontrol *kcontrol,
 static int dsp_audio_avc_enable_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->audio_avc_set;
@@ -5416,7 +5416,7 @@ static int dsp_audio_avc_enable_put(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	int ret;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.enumerated.item[0];
@@ -5432,7 +5432,7 @@ static int dsp_audio_avc_enable_put(struct snd_kcontrol *kcontrol,
 static int dsp_voice_volume_ramp_enable_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->voice_volume_ramp_set;
@@ -5446,7 +5446,7 @@ static int dsp_voice_volume_ramp_enable_put(struct snd_kcontrol *kcontrol,
 {
 	u32 value;
 	int ret;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.enumerated.item[0];
@@ -5462,7 +5462,7 @@ static int dsp_voice_volume_ramp_enable_put(struct snd_kcontrol *kcontrol,
 static int dsp_incall_music_mix_voice_dl_enable_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = vbc_codec->incall_music_mix_voice_dl_set;
@@ -5476,7 +5476,7 @@ static int dsp_incall_music_mix_voice_dl_enable_put(struct snd_kcontrol *kcontro
 {
 	u32 value;
 	int ret;
-	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *codec = snd_kcontrol_chip(kcontrol);
 	struct vbc_codec_priv *vbc_codec = snd_soc_component_get_drvdata(codec);
 
 	value = ucontrol->value.enumerated.item[0];

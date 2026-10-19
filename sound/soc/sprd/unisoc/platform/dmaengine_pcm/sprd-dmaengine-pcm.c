@@ -2417,8 +2417,8 @@ static struct snd_soc_component_driver sprd_soc_platform = {
 	.name = SPRD_DMAENGINE_PCM_DRV_NAME,
 	.probe = sprd_snd_platform_probe,
 	.remove = sprd_snd_platform_remove,
-	.pcm_construct = sprd_pcm_new,
-	.pcm_destruct = sprd_pcm_free_dma_buffers,
+	.pcm_new = sprd_pcm_new,
+	.pcm_free = sprd_pcm_free_dma_buffers,
 	/* snd_pcm_ops*/
 	.open = sprd_pcm_open,
 	.close = sprd_pcm_close,
