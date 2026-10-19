@@ -632,7 +632,7 @@ static int trusty_probe(struct platform_device *pdev)
 		goto err_api_version;
 
 	INIT_DELAYED_WORK(&s->nop_poll, trusty_nop_poll);
-	s->nop_wq = alloc_workqueue("trusty-nop-wq", WQ_CPU_INTENSIVE, 0);
+	s->nop_wq = alloc_workqueue("trusty-nop-wq", WQ_PERCPU | WQ_CPU_INTENSIVE, 0);
 	if (!s->nop_wq) {
 		ret = -ENODEV;
 		dev_err(&pdev->dev, "Failed create trusty-nop-wq\n");
