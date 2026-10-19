@@ -830,24 +830,24 @@ static int audio_dsp_parse_dt(
 	type = (long)of_id->data;
 	switch (type) {
 	case DSP_LOG:
-		strncpy(pdata->name, "audio_dsp_log", SPRD_MAX_NAME_LEN);
-		strncpy(pdata->dump_content, "log", SPRD_MAX_NAME_LEN);
+		strscpy(pdata->name, "audio_dsp_log", sizeof(pdata->name));
+		strscpy(pdata->dump_content, "log", sizeof(pdata->dump_content));
 		break;
 	case DSP_PCM:
-		strncpy(pdata->name, "audio_dsp_pcm", SPRD_MAX_NAME_LEN);
-		strncpy(pdata->dump_content, "pcm", SPRD_MAX_NAME_LEN);
+		strscpy(pdata->name, "audio_dsp_pcm", sizeof(pdata->name));
+		strscpy(pdata->dump_content, "pcm", sizeof(pdata->dump_content));
 		break;
 	case DSP_MEM:
-		strncpy(pdata->name, "audio_dsp_mem", SPRD_MAX_NAME_LEN);
-		strncpy(pdata->dump_content, "memory", SPRD_MAX_NAME_LEN);
+		strscpy(pdata->name, "audio_dsp_mem", sizeof(pdata->name));
+		strscpy(pdata->dump_content, "memory", sizeof(pdata->dump_content));
 		break;
 	case DSP_CALL_INFO:
-		strncpy(pdata->name, "audio_dsp_call_info", SPRD_MAX_NAME_LEN);
-		strncpy(pdata->dump_content, "call_info", SPRD_MAX_NAME_LEN);
+		strscpy(pdata->name, "audio_dsp_call_info", sizeof(pdata->name));
+		strscpy(pdata->dump_content, "call_info", sizeof(pdata->dump_content));
 		break;
 	case DSP_IVDATA:
-		strncpy(pdata->name, "audio_dsp_ivdata", SPRD_MAX_NAME_LEN);
-		strncpy(pdata->dump_content, "dsp_ivdata", SPRD_MAX_NAME_LEN);
+		strscpy(pdata->name, "audio_dsp_ivdata", sizeof(pdata->name));
+		strscpy(pdata->dump_content, "dsp_ivdata", sizeof(pdata->dump_content));
 		break;
 	default:
 		ret = -EINVAL;

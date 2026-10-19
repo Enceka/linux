@@ -21,7 +21,7 @@
 #include <linux/gpio.h>
 #include <linux/ioport.h>
 #include <linux/clk.h>
-#include <linux/of_gpio.h>
+#include <linux/soc/sprd/unisoc_gpio_compat.h>
 #include "marlin_platform.h"
 #include "unisoc_bt_log.h"
 #include "rfkill.h"

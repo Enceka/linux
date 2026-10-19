@@ -176,7 +176,7 @@ int sprd_bt_read_soc_version(char *op_string){
         return -EINVAL;
     }
 
-    strncpy(op_string, value, strlen(value)+1);
+    strscpy(op_string, value, sizeof(op_string));
     pr_info("phone soc version: %s \n", op_string);
 
     return 0;

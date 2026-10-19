@@ -357,7 +357,7 @@ static bool sprd_mini_dump_check_parent_name(struct modem_dump_info **info, size
 	if (!count)
 		return false;
 
-	strncpy(mini_parent_name, (*info)->parent_name, sizeof(mini_parent_name));
+	strscpy(mini_parent_name, (*info)->parent_name, sizeof(mini_parent_name));
 	mini_parent_name[MINI_DUMP_NAME_MAX_LEN - 1] = '\0';
 	if (strstr(mini_parent_name, "sharemem")
 		|| strstr(mini_parent_name, "pscp")

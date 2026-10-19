@@ -430,8 +430,7 @@ static int apipe_parse_dt(struct device *dev,
 
 	name = dev_name(dev);
 	if (strlen(name) < SPRD_PIPE_NAME_MAX)
-		strncpy(apipe_dev->device_name,
-				name, strlen(name));
+		strscpy(apipe_dev->device_name, name, sizeof(apipe_dev->device_name));
 	else {
 		dev_err(apipe_dev->dev,
 			"apipe: name is too long:%d\n", (int)strlen(name));

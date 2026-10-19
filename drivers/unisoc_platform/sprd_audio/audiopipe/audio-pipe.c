@@ -387,28 +387,22 @@ static int aud_pipe_parse_dt(struct device *dev,
 	type = (long)of_id->data;
 	switch (type) {
 	case SPRD_PIPE_VOICE:
-		strncpy(aud_pipe_dev->device_name,
-			"audio_pipe_voice", SPRD_PIPE_NAME_MAX);
+		strscpy(aud_pipe_dev->device_name, "audio_pipe_voice", sizeof(aud_pipe_dev->device_name));
 		break;
 	case SPRD_PIPE_EFFECT:
-		strncpy(aud_pipe_dev->device_name,
-			"audio_pipe_effect", SPRD_PIPE_NAME_MAX);
+		strscpy(aud_pipe_dev->device_name, "audio_pipe_effect", sizeof(aud_pipe_dev->device_name));
 		break;
 	case SPRD_PIPE_RECORD_PROCESS:
-		strncpy(aud_pipe_dev->device_name,
-			"audio_pipe_recordproc", SPRD_PIPE_NAME_MAX);
+		strscpy(aud_pipe_dev->device_name, "audio_pipe_recordproc", sizeof(aud_pipe_dev->device_name));
 		break;
 	case SPRD_PIPE_BTHAL:
-		strncpy(aud_pipe_dev->device_name,
-			"audio_pipe_bthal", SPRD_PIPE_NAME_MAX);
+		strscpy(aud_pipe_dev->device_name, "audio_pipe_bthal", sizeof(aud_pipe_dev->device_name));
 		break;
 	case SPRD_PIPE_TRIGGER_RX:
-		strncpy(aud_pipe_dev->device_name,
-			"audio_pipe_trigger_rx", SPRD_PIPE_NAME_MAX);
+		strscpy(aud_pipe_dev->device_name, "audio_pipe_trigger_rx", sizeof(aud_pipe_dev->device_name));
 		break;
 	case SPRD_PIPE_TRIGGER_TX:
-		strncpy(aud_pipe_dev->device_name,
-			"audio_pipe_trigger_tx", SPRD_PIPE_NAME_MAX);
+		strscpy(aud_pipe_dev->device_name, "audio_pipe_trigger_tx", sizeof(aud_pipe_dev->device_name));
 		break;
 	default:
 		ret = -EINVAL;

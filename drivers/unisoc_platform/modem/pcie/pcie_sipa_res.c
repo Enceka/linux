@@ -136,7 +136,7 @@ void *pcie_sipa_res_create(u8 dst, enum sipa_rm_res_id prod_id,
 	INIT_DELAYED_WORK(&res->rm_work, pcie_sipa_res_create_rm_work_fn);
 
 	/* create pms */
-	strncpy(res->pms_name, "sipa", sizeof(res->pms_name));
+	strscpy(res->pms_name, "sipa", sizeof(res->pms_name));
 	res->pms = sprd_pms_create(dst, res->pms_name, false);
 	if (!res->pms) {
 		pr_err("pcie_sipa_res: create pms failed!\n");
