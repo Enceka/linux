@@ -42,7 +42,7 @@ static enum hrtimer_restart vsync_timer_func(struct hrtimer *timer)
 }
 
 static void sprd_dummy_plane_atomic_update(struct drm_plane *plane,
-				    struct drm_atomic_state *state)
+				    struct drm_atomic_commit *state)
 {
 	DRM_DEBUG("\n");
 }
@@ -90,13 +90,13 @@ static struct drm_plane *sprd_dummy_plane_init(struct drm_device *drm,
 }
 
 static void sprd_dummy_crtc_atomic_enable(struct drm_crtc *crtc,
-				   struct drm_atomic_state *old_state)
+				   struct drm_atomic_commit *old_state)
 {
 	DRM_INFO("%s()\n", __func__);
 }
 
 static void sprd_dummy_crtc_atomic_disable(struct drm_crtc *crtc,
-				   struct drm_atomic_state *state)
+				   struct drm_atomic_commit *state)
 {
 	spin_lock_irq(&crtc->dev->event_lock);
 	if (crtc->state->event) {
@@ -109,7 +109,7 @@ static void sprd_dummy_crtc_atomic_disable(struct drm_crtc *crtc,
 }
 
 static void sprd_dummy_crtc_atomic_flush(struct drm_crtc *crtc,
-				  struct drm_atomic_state *old_state)
+				  struct drm_atomic_commit *old_state)
 
 {
 	struct dummy_crtc *dummy = crtc_to_dummy(crtc);

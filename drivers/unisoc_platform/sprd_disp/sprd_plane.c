@@ -50,7 +50,7 @@ static void sprd_plane_cleanup_fb(struct drm_plane *plane,
 }
 
 static void sprd_plane_atomic_update(struct drm_plane *drm_plane,
-					struct drm_atomic_state *old_state)
+					struct drm_atomic_commit *old_state)
 {
 	struct drm_plane_state *drm_state = drm_plane->state;
 	struct sprd_crtc *crtc = to_sprd_crtc(drm_state->crtc);
@@ -118,7 +118,7 @@ static void sprd_plane_atomic_update(struct drm_plane *drm_plane,
 }
 
 static int sprd_plane_atomic_check(struct drm_plane *plane,
-				  struct drm_atomic_state *state)
+				  struct drm_atomic_commit *state)
 {
 	DRM_DEBUG("%s()\n", __func__);
 

@@ -7,6 +7,7 @@
 
 #include <linux/of.h>
 #include <linux/backlight.h>
+#include <linux/fb.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>

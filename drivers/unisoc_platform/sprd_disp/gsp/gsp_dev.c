@@ -634,7 +634,7 @@ int sprd_gsp_get_capability_ioctl(struct drm_device *drm_dev, void *data,
 	 * to keep 'cap' at the offset the prebuilt HAL writes it to - see the ABI
 	 * note in include/uapi/drm/sprd_drm_gsp.h.
 	 */
-	strncpy(version, drm_capa->version, sizeof(version) - 1);
+	strscpy(version, drm_capa->version, sizeof(version));
 	version[sizeof(version) - 1] = '\0';
 	GSP_DEV_INFO(dev, "cap req: gsp_id=%zu size=%zu version='%s' cap=%px\n",
 			gsp_id, drm_capa->size, version, drm_capa->cap);

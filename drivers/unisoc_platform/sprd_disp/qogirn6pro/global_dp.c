@@ -10,7 +10,7 @@
 #include <linux/gpio/consumer.h>
 #include <linux/module.h>
 #include <linux/mfd/syscon.h>
-#include <linux/of_gpio.h>
+#include <linux/soc/sprd/unisoc_gpio_compat.h>
 #include <linux/regmap.h>
 #include <linux/usb/typec_dp.h>
 #include <dt-bindings/soc/sprd,qogirn6pro-mask.h>

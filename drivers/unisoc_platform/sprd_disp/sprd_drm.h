@@ -14,14 +14,14 @@
 
 struct sprd_commit_list {
 	struct list_head head;
-	struct drm_atomic_state *state;
+	struct drm_atomic_commit *state;
 };
 
 struct sprd_drm {
 	struct drm_device *drm;
 	struct sprd_commit_list *commit;
 	struct device *gsp_dev[GSP_MAX_NUM];
-	struct drm_atomic_state *state;
+	struct drm_atomic_commit *state;
 	struct mutex state_lock;
 	struct list_head post_list;
 	struct mutex post_lock;

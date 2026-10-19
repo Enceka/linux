@@ -29,7 +29,7 @@ struct gsp_sync_timeline;
 #define GSP_MAX_NUM 2
 
 struct sprd_drm {
-	struct drm_atomic_state *state;
+	struct drm_atomic_commit *state;
 	struct drm_device *drm;
 	struct device *gsp_dev[GSP_MAX_NUM];
 };

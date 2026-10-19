@@ -51,7 +51,7 @@
 #define SPRD_FENCE_WAIT_TIMEOUT 3000 /* ms */
 
 #if IS_ENABLED(CONFIG_ANDROID_VENDOR_HOOKS)
-static void sprd_drm_atomic_check_modeset(void *data, struct drm_atomic_state *state,
+static void sprd_drm_atomic_check_modeset(void *data, struct drm_atomic_commit *state,
 				struct drm_crtc *crtc, bool *allow)
 {
 	if(allow)
@@ -104,7 +104,7 @@ static bool boot_mode_check(const char *str)
  * Returns zero if success or < 0 if dma_fence_wait_timeout() fails.
  */
 int sprd_atomic_wait_for_fences(struct drm_device *dev,
-				      struct drm_atomic_state *state,
+				      struct drm_atomic_commit *state,
 				      bool pre_swap)
 {
 	struct drm_plane *plane;
@@ -149,7 +149,7 @@ int sprd_atomic_wait_for_fences(struct drm_device *dev,
 }
 
 static int sprd_atomic_wait_last_cleanup_done(struct drm_device *drm,
-						struct drm_atomic_state *state)
+						struct drm_atomic_commit *state)
 {
 	int i, ret;
 	struct drm_connector *connector;
@@ -196,7 +196,7 @@ static int sprd_atomic_wait_last_cleanup_done(struct drm_device *drm,
 	return 0;
 }
 
-static void sprd_commit_tail(struct drm_atomic_state *old_state)
+static void sprd_commit_tail(struct drm_atomic_commit *old_state)
 {
 	struct drm_device *dev = old_state->dev;
 
@@ -217,7 +217,7 @@ static void sprd_commit_tail(struct drm_atomic_state *old_state)
 
 	drm_atomic_helper_commit_cleanup_done(old_state);
 
-	drm_atomic_state_put(old_state);
+	drm_atomic_commit_put(old_state);
 }
 
 static void sprd_commit_work(struct kthread_work *work)
@@ -239,7 +239,7 @@ static void sprd_commit_work(struct kthread_work *work)
 }
 
 int sprd_atomic_helper_commit(struct drm_device *dev,
-			struct drm_atomic_state *state, bool nonblock)
+			struct drm_atomic_commit *state, bool nonblock)
 {
 	int ret;
 	struct sprd_drm *sprd;
@@ -273,7 +273,7 @@ int sprd_atomic_helper_commit(struct drm_device *dev,
 	if (ret)
 		goto err;
 
-	drm_atomic_state_get(state);
+	drm_atomic_commit_get(state);
 	if (nonblock) {
 		mutex_lock(&sprd->post_lock);
 		sprd->commit = kzalloc(sizeof(struct sprd_commit_list), GFP_KERNEL);
@@ -609,7 +609,7 @@ static void sprd_drm_shutdown(struct platform_device *pdev)
 static int sprd_drm_pm_suspend(struct device *dev)
 {
 	struct drm_device *drm = dev_get_drvdata(dev);
-	struct drm_atomic_state *state;
+	struct drm_atomic_commit *state;
 	struct sprd_drm *sprd;
 	struct drm_crtc *crtc;
 	static bool is_suspend;

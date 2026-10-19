@@ -140,7 +140,7 @@ static enum drm_mode_status sprd_crtc_mode_valid(struct drm_crtc *crtc,
 }
 
 static int sprd_crtc_atomic_check(struct drm_crtc *crtc,
-				     struct drm_atomic_state *state)
+				     struct drm_atomic_commit *state)
 {
 	struct sprd_crtc *sprd_crtc = to_sprd_crtc(crtc);
 	unsigned int crtc_index = drm_crtc_index(crtc);
@@ -159,7 +159,7 @@ static int sprd_crtc_atomic_check(struct drm_crtc *crtc,
 }
 
 static void sprd_crtc_atomic_begin(struct drm_crtc *crtc,
-				     struct drm_atomic_state *state)
+				     struct drm_atomic_commit *state)
 {
 	struct sprd_crtc *sprd_crtc = to_sprd_crtc(crtc);
 
@@ -168,7 +168,7 @@ static void sprd_crtc_atomic_begin(struct drm_crtc *crtc,
 }
 
 static void sprd_crtc_atomic_enable(struct drm_crtc *crtc,
-					struct drm_atomic_state *state)
+					struct drm_atomic_commit *state)
 {
 	struct sprd_crtc *sprd_crtc = to_sprd_crtc(crtc);
 
@@ -191,7 +191,7 @@ static void sprd_crtc_atomic_enable(struct drm_crtc *crtc,
 }
 
 static void sprd_crtc_atomic_disable(struct drm_crtc *crtc,
-					   struct drm_atomic_state *state)
+					   struct drm_atomic_commit *state)
 {
 	struct sprd_crtc *sprd_crtc = to_sprd_crtc(crtc);
 
@@ -222,7 +222,7 @@ static void sprd_crtc_atomic_disable(struct drm_crtc *crtc,
 }
 
 static void sprd_crtc_atomic_flush(struct drm_crtc *crtc,
-				     struct drm_atomic_state *state)
+				     struct drm_atomic_commit *state)
 {
 	struct sprd_crtc *sprd_crtc = to_sprd_crtc(crtc);
 

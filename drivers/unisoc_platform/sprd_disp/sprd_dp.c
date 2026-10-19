@@ -375,7 +375,7 @@ is_hdr_metadata_different(const struct drm_connector_state *old_state,
 }
 
 static int sprd_dp_connector_atomic_check(struct drm_connector *connector,
-				 struct drm_atomic_state *state)
+				 struct drm_atomic_commit *state)
 {
 	struct drm_connector_state *new_con_state =
 		drm_atomic_get_new_connector_state(state, connector);

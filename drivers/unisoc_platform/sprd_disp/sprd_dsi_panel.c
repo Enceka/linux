@@ -4,9 +4,10 @@
  */
 
 #include <linux/backlight.h>
+#include <linux/fb.h>
 #include <linux/module.h>
 #include <linux/of.h>
-#include <linux/of_gpio.h>
+#include <linux/soc/sprd/unisoc_gpio_compat.h>
 #include <video/of_display_timing.h>
 #include <video/mipi_display.h>
 #include <video/videomode.h>
@@ -1457,9 +1458,15 @@ static int sprd_panel_probe(struct mipi_dsi_device *slave)
 			DRM_ERROR("create cabc Failed!\n");
 	}
 
-	panel = devm_kzalloc(&slave->dev, sizeof(*panel), GFP_KERNEL);
-	if (!panel)
-		return -ENOMEM;
+	/*
+	 * 7.2 has no drm_panel_init(): a panel is refcounted now and has to come
+	 * from devm_drm_panel_alloc(), which initializes the embedded drm_panel
+	 * and drops the reference when the device goes away.
+	 */
+	panel = devm_drm_panel_alloc(&slave->dev, struct sprd_panel, base,
+				     &sprd_panel_funcs, DRM_MODE_CONNECTOR_DSI);
+	if (IS_ERR(panel))
+		return PTR_ERR(panel);
 
 	lcd_node = sprd_get_panel_node_by_name();
 	if (!lcd_node)
@@ -1523,7 +1530,6 @@ static int sprd_panel_probe(struct mipi_dsi_device *slave)
 
 	panel->base.dev = &panel->dev;
 	panel->base.funcs = &sprd_panel_funcs;
-	drm_panel_init(&panel->base, &panel->dev, &sprd_panel_funcs, DRM_MODE_CONNECTOR_DSI);
 
 	drm_panel_add(&panel->base);
 	if (ret) {

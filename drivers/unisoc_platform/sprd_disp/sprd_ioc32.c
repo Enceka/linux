@@ -44,7 +44,7 @@ static int sprd_gsp_trigger_compat_ioctl(struct file *file, unsigned int cmd, un
 	getparam.num = getparam32.num;
 	getparam.split = getparam32.split;
 	getparam.config = compat_ptr(getparam32.config);
-	strncpy(getparam.version, getparam32.version, sizeof(getparam.version) - 1);
+	strscpy(getparam.version, getparam32.version, sizeof(getparam.version));
 	getparam.version[sizeof(getparam.version) - 1] = '\0';
 
 	return drm_ioctl_kernel(file, sprd_gsp_trigger_ioctl, &getparam, 0);
@@ -61,7 +61,7 @@ static int sprd_gsp_get_capability_compat_ioctl(struct file *file, unsigned int 
 	getparam.gsp_id = getparam32.gsp_id;
 	getparam.size = getparam32.size;
 	getparam.cap = compat_ptr(getparam32.cap);
-	strncpy(getparam.version, getparam32.version, sizeof(getparam.version) - 1);
+	strscpy(getparam.version, getparam32.version, sizeof(getparam.version));
 	getparam.version[sizeof(getparam.version) - 1] = '\0';
 	return drm_ioctl_kernel(file, sprd_gsp_get_capability_ioctl, &getparam, 0);
 }
