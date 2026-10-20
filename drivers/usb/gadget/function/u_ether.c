@@ -511,6 +511,20 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 		/* ignores USB_CDC_PACKET_TYPE_DIRECTED */
 	}
 
+	/*
+	 * The gadget advertises no checksum offloads, so a CHECKSUM_PARTIAL skb
+	 * must be completed here: the transport header holds the pseudo-header
+	 * sum only, and a host whose receive checksumming is fixed off drops
+	 * the frame (a DHCP reply over NCM arrived with a bad UDP checksum and
+	 * the client never saw it).  validate_xmit_skb() normally does this,
+	 * but the bridge path leaves the job to the transmitting device.
+	 */
+	if (skb && skb->ip_summed == CHECKSUM_PARTIAL &&
+	    skb_checksum_help(skb)) {
+		dev_kfree_skb_any(skb);
+		return NETDEV_TX_OK;
+	}
+
 	spin_lock_irqsave(&dev->req_lock, flags);
 	/*
 	 * this freelist can be empty if an interrupt triggered disconnect()
