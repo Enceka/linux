@@ -18,8 +18,12 @@
 #include <linux/ethtool.h>
 #include <linux/hex.h>
 #include <linux/if_vlan.h>
+#include <linux/ip.h>
 #include <linux/string_helpers.h>
+#include <linux/tcp.h>
+#include <linux/udp.h>
 #include <linux/usb/composite.h>
+#include <net/ip.h>
 
 #include "u_ether.h"
 
@@ -454,6 +458,95 @@ static int ether_wakeup_host(struct gether *port)
 	return ret;
 }
 
+/*
+ * A bridge or TC/BPF redirect can leave a checksum as the pseudo-header-only
+ * value while changing skb->ip_summed away from CHECKSUM_PARTIAL.  The normal
+ * xmit validation then has nothing to complete, and an NCM host with receive
+ * checksumming disabled drops the frame.  Recompute only the exact partial
+ * value so ordinary packets and UDP checksum-zero (disabled) packets are left
+ * alone.
+ */
+static void ether_complete_pseudo_csum(struct sk_buff *skb)
+{
+	struct iphdr iph_copy;
+	struct iphdr *iph;
+	struct tcphdr tcp_copy;
+	struct tcphdr *tcp;
+	struct udphdr udp_copy;
+	struct udphdr *udp;
+	__be16 *check_ptr;
+	__sum16 expected;
+	__sum16 check;
+	__wsum csum;
+	__be32 saddr, daddr;
+	unsigned int network_offset, transport_offset, payload_len, l4_len;
+	unsigned int check_offset;
+	u8 protocol;
+
+	if (!skb || skb_is_gso(skb))
+		return;
+
+	network_offset = skb_network_offset(skb);
+	if (network_offset > skb->len)
+		return;
+	iph = skb_header_pointer(skb, network_offset, sizeof(*iph), &iph_copy);
+	if (!iph || iph->version != 4 || iph->ihl < 5 ||
+	    (ntohs(iph->frag_off) & IP_OFFSET))
+		return;
+
+	payload_len = ntohs(iph->tot_len);
+	transport_offset = iph->ihl * 4;
+	if (payload_len < transport_offset || payload_len > skb->len - network_offset)
+		return;
+	payload_len -= transport_offset;
+	transport_offset += network_offset;
+	protocol = iph->protocol;
+	saddr = iph->saddr;
+	daddr = iph->daddr;
+
+	if (protocol == IPPROTO_UDP) {
+		udp = skb_header_pointer(skb, transport_offset, sizeof(*udp), &udp_copy);
+		if (!udp || udp->len < sizeof(*udp))
+			return;
+		l4_len = ntohs(udp->len);
+		check_offset = offsetof(struct udphdr, check);
+	} else if (protocol == IPPROTO_TCP) {
+		tcp = skb_header_pointer(skb, transport_offset, sizeof(*tcp), &tcp_copy);
+		if (!tcp || tcp->doff < sizeof(*tcp) / 4 ||
+		    tcp->doff * 4 > payload_len)
+			return;
+		l4_len = payload_len;
+		check_offset = offsetof(struct tcphdr, check);
+	} else {
+		return;
+	}
+
+	if (l4_len > payload_len || l4_len > skb->len - transport_offset)
+		return;
+	check_ptr = skb_header_pointer(skb, transport_offset + check_offset,
+				       sizeof(*check_ptr), &check);
+	if (!check_ptr)
+		return;
+	check = *check_ptr;
+	if (protocol == IPPROTO_UDP && !check)
+		return;
+
+	expected = ~csum_tcpudp_magic(saddr, daddr, l4_len, protocol, 0);
+	if (check != expected)
+		return;
+
+	if (skb_ensure_writable(skb, transport_offset + check_offset +
+				 sizeof(check)))
+		return;
+	check_ptr = (__be16 *)(skb->data + transport_offset + check_offset);
+	*check_ptr = 0;
+	csum = skb_checksum(skb, transport_offset, l4_len, 0);
+	check = csum_tcpudp_magic(saddr, daddr, l4_len, protocol, csum);
+	if (!check)
+		check = CSUM_MANGLED_0;
+	*check_ptr = check;
+}
+
 static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 					struct net_device *net)
 {
@@ -525,6 +618,8 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 		dev_kfree_skb_any(skb);
 		return NETDEV_TX_OK;
 	}
+
+	ether_complete_pseudo_csum(skb);
 
 	spin_lock_irqsave(&dev->req_lock, flags);
 	/*
